@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Print System</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Optional custom styling */
+        body {
+            font-family: Arial, sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 py-5">
+    <!-- Merchant Page -->
+    <div id="merchantPage" class="hidden container mx-auto p-5 bg-white shadow-lg rounded-lg">
+        <h1 class="text-3xl font-semibold text-center mb-6">Merchant Dashboard</h1>
+        <div id="qrCode" class="text-center">Generating QR Code...</div>
+        <div id="printRequest" class="mt-5">
+            <h2 class="text-xl font-medium mb-4">Print Request Received</h2>
+            <p><b>Queue Number:</b> <span id="queueNumber"></span></p>
+            <p><b>Printer Settings:</b> <span id="printerSettings"></span></p>
+            <p><b>Cost:</b> ₹<span id="printCost"></span></p>
+            <div id="paymentQr" class="my-4 text-center"></div>
+            <div id="fileLinks" class="my-4"></div>
+            <button id="confirmPaymentButton" class="btn bg-green-500 text-white p-2 rounded" onclick="confirmPayment()">Confirm Payment</button>
+            <button id="printButton" class="btn bg-blue-500 text-white p-2 rounded mt-3" onclick="printFiles()" disabled>Print</button>
+        </div>
+    </div>
+
+    <!-- Client Page -->
+    <div id="clientPage" class="hidden container mx-auto p-5 bg-white shadow-lg rounded-lg">
+        <h1 class="text-3xl font-semibold text-center mb-6">Upload Files for Printing</h1>
+        <input type="file" id="fileInput" accept=".pdf,.jpg" multiple class="block w-full p-2 mb-4 border rounded">
+        
+        <label for="printerSelect" class="block font-semibold mb-2">Select Printer:</label>
+        <select id="printerSelect" class="w-full p-2 mb-4 border rounded"></select>
+        
+        <label for="colorMode" class="block font-semibold mb-2">Color Mode:</label>
+        <select id="colorMode" class="w-full p-2 mb-4 border rounded">
+            <option value="color">Color</option>
+            <option value="grayscale">Black & White</option>
+        </select>
+        
+        <label for="copies" class="block font-semibold mb-2">Copies:</label>
+        <input type="number" id="copies" min="1" value="1" class="block w-full p-2 mb-4 border rounded">
+        
+        <button onclick="uploadFiles()" class="w-full bg-blue-500 text-white p-2 rounded mt-3">Upload & Print</button>
+        
+        <div id="clientQrCode" class="my-4 text-center"></div>
+        <p><b>Estimated Cost:</b> ₹<span id="clientPrintCost"></span></p>
+        <p><b>Queue Number:</b> <span id="queueNumberClient"></span></p>
+    </div>
+
+    <script>
+        let a;
+        const socket = io("http://localhost:6822");
+        const urlParams = new URLSearchParams(window.location.search);
+        const isClient = urlParams.get("mode") === "client";
+
+        // Client-side page initialization
+        if (isClient) {
+            document.getElementById("clientPage").classList.remove("hidden");
+
+            socket.on("printerInfo", (printers) => {
+                const printerSelect = document.getElementById("printerSelect");
+                printerSelect.innerHTML = printers.map(p => `<option value="${p.name}">${p.name}</option>`).join("");
+            });
+            socket.emit("getPrinters");
+        } else {
+            // Merchant page initialization
+            document.getElementById("merchantPage").classList.remove("hidden");
+            socket.emit("registerMerchant");
+
+            fetch("http://localhost:6822/generateQR")
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById("qrCode").innerHTML = `<img src="${data.qrCode}" alt="Scan QR Code" class="w-64 h-64 mx-auto" />`;
+                });
+
+            socket.on("printFile", (data) => {
+                a =data
+                document.getElementById("queueNumber").innerText = data.queueNumber;  // Display Queue Number
+                document.getElementById("printerSettings").innerText = `Printer: ${data.printerSettings.printer}, Mode: ${data.printerSettings.colorMode}, Copies: ${data.printerSettings.copies}`;
+                document.getElementById("printCost").innerText = data.totalCost;
+                document.getElementById("paymentQr").innerHTML = `<img src="${data.upiQrCode}" alt="UPI QR Code" class="w-64 h-64 mx-auto" />`;
+                document.getElementById("fileLinks").innerHTML = data.files.map(file => `<a href="${file.filePath}" target="_blank" class="text-blue-500">${file.originalName}</a><br>`).join("");
+                document.getElementById("printRequest").style.display = "block";
+            });
+        }
+
+        // Client file upload handler
+        function uploadFiles() {
+            const files = document.getElementById("fileInput").files;
+            const printerName = document.getElementById("printerSelect").value;
+            const colorMode = document.getElementById("colorMode").value;
+            const copies = document.getElementById("copies").value;
+
+            if (files.length === 0) {
+                alert("Please select files.");
+                return;
+            }
+
+            const formData = new FormData();
+            for (let file of files) {
+                formData.append("files", file);
+            }
+            formData.append("printer", printerName);
+            formData.append("colorMode", colorMode);
+            formData.append("copies", copies);
+
+            fetch("http://localhost:6822/upload", {
+                method: "POST",
+                body: formData
+            })
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById("clientQrCode").innerHTML = `<img src="${data.files.upiQrCode}" alt="Payment QR Code" class="w-64 h-64 mx-auto" />`;
+                    document.getElementById("clientPrintCost").innerText = data.files.totalCost;
+                    document.getElementById("queueNumberClient").innerText = data.files.queueNumber;  // Display Queue Number
+                    alert("Files sent to merchant! Please scan the QR code to pay.");
+                })
+                .catch(err => console.error("Upload error:", err));
+        }
+
+        // Merchant payment confirmation handler
+        function confirmPayment() {
+            socket.emit("confirmPayment");
+            alert("Payment confirmed!");
+            document.getElementById("printButton").disabled = false;
+        }
+
+        // Print files handler
+        function printFiles() {
+            fetch("http://localhost:6822/print", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    files: Array.from(document.querySelectorAll("#fileLinks a")).map(a => ({
+                        filePath: a.href,
+                        originalName: a.innerText
+                    })),
+                    printer: document.getElementById("printerSettings").innerText.split(", ")[0].split(": ")[1],
+                    colorMode: document.getElementById("printerSettings").innerText.split(", ")[1].split(": ")[1],
+                    copies: document.getElementById("printerSettings").innerText.split(", ")[2].split(": ")[1]
+                })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Print job initiated!");
+                    } else {
+                        alert("Error printing files: " + data.error);
+                    }
+                })
+                .catch(err => console.error("Print error:", err));
+        }
+    </script>
+</body>
+
+</html>
