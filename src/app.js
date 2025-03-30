@@ -199,7 +199,8 @@ app.post("/print", (req, res) => {
 
 server.listen(port, () => {
     console.log(`✅ Server running at http://localhost:${port}/`);
-});
+});  
+
 function queueNumberincrese( ) {
     queueNumber +=1
 }
