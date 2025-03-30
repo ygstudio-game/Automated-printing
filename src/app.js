@@ -8,9 +8,12 @@ const path = require("path");
 const fs = require("fs");
 const pdfToPrinter = require("pdf-to-printer");
 const pdfParse = require("pdf-parse");
+const { log } = require("console");
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
+const axios = require("axios"); // Ensure axios is required
+
 let queueNumber=0;
 
 app.use(cors());
@@ -26,6 +29,7 @@ let merchantDetails = { shopName: "", upiId: "" };
 
 let merchantSocket = null;
 let printQueue = [];  // This will store the print requests with their queue numbers
+let printerList = []; // Store latest printer list
 
 app.get("/index.html", (req, res) => {
     res.sendFile(path.join(__dirname, "../public/index.html"));
@@ -70,6 +74,8 @@ socket.on("removeRequest", (queueNumber) => {
     socket.on("disconnect", () => {
         if (socket === merchantSocket) merchantSocket = null;
     });
+
+    
 });
 app.post("/saveMerchant", (req, res) => {
     const { shopName, upiId } = req.body;
@@ -126,7 +132,7 @@ app.post("/upload", upload.array("files"), async (req, res) => {
         totalCost += cost;
 
         uploadedFiles.push({
-            filePath: `http://localhost:${port}/uploads/${file.filename}`,
+            filePath: `https://automated-printing.onrender.com/uploads/${file.filename}`,
             originalName: file.originalname
         });
     }
@@ -156,6 +162,28 @@ app.post("/upload", upload.array("files"), async (req, res) => {
 });
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.post("/update-printer", (req, res) => {
+    const { printers } = req.body;
+    if (Array.isArray(printers)) {
+        merchantPrinters = printers;
+        console.log("Updated merchant printers:", merchantPrinters);
+        res.json({ success: true });
+    } else {
+        res.status(400).json({ error: "Invalid printer data" });
+    }
+});
+
+app.get("/get-printer", async (req, res) => {
+    try {
+        // const response = await axios.get("http://localhost:3001/printers");
+        // res.json(response.data); // Use live data
+        res.json({ printers: merchantPrinters }); // Fallback to stored list
+    } catch (error) {
+        console.error("Error fetching printers from Electron app:", error.message);
+        res.json({ printers: merchantPrinters }); // Fallback to stored list
+    }
+});
+ 
 
 // Handle the actual print request
 app.post("/print", (req, res) => {
