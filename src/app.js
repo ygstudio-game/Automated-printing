@@ -92,7 +92,7 @@ app.post("/saveMerchant", (req, res) => {
 
 // Generate UPI QR for payment
 app.get("/generateQR", async (req, res) => {
-    const clientUrl = `http://localhost:${port}/index.html?mode=client`;
+    const clientUrl = `https://automated-printing.onrender.com/index.html?mode=client`;
     try {
         const qrCode = await QRCode.toDataURL(clientUrl);
         res.json({ qrCode });
