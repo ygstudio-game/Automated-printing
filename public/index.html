@@ -125,7 +125,7 @@
 
     <script>
         let a;
-        const socket = io("http://localhost:6822");
+        const socket = io("https://automated-printing.onrender.com");
         const urlParams = new URLSearchParams(window.location.search);
         const isClient = urlParams.get("mode") === "client";
 
@@ -143,7 +143,7 @@
             document.getElementById("merchantPage").classList.remove("hidden");
             socket.emit("registerMerchant");
 
-            fetch("http://localhost:6822/generateQR")
+            fetch("https://automated-printing.onrender.com/generateQR")
                 .then(res => res.json())
                 .then(data => {
                     document.getElementById("qrCode").innerHTML = `<img src="${data.qrCode}" alt="Scan QR Code" class="w-64 h-64 mx-auto" />`;
@@ -204,7 +204,7 @@
             formData.append("colorMode", colorMode);
             formData.append("copies", copies);
 
-            fetch("http://localhost:6822/upload", {
+            fetch("https://automated-printing.onrender.com/upload", {
     method: "POST",
     body: formData
 })
@@ -249,7 +249,7 @@ function saveMerchantDetails() {
     }
 
     // Save merchant details to the backend
-    fetch("http://localhost:6822/saveMerchant", {
+    fetch("https://automated-printing.onrender.com/saveMerchant", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ shopName, upiId })
@@ -269,7 +269,7 @@ function saveMerchantDetails() {
         function printFiles(queueNumber) {
             console.log(4);
             
-    fetch("http://localhost:6822/print", {
+    fetch("https://automated-printing.onrender.com/print", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

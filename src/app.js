@@ -86,7 +86,7 @@ app.post("/saveMerchant", (req, res) => {
 
 // Generate UPI QR for payment
 app.get("/generateQR", async (req, res) => {
-    const clientUrl = `http://localhost:${port}/index.html?mode=client`;
+    const clientUrl = `https://automated-printing.onrender.com/index.html?mode=client`;
     try {
         const qrCode = await QRCode.toDataURL(clientUrl);
         res.json({ qrCode });
@@ -126,7 +126,7 @@ app.post("/upload", upload.array("files"), async (req, res) => {
         totalCost += cost;
 
         uploadedFiles.push({
-            filePath: `http://localhost:${port}/uploads/${file.filename}`,
+            filePath: `https://automated-printing.onrender.com/uploads/${file.filename}`,
             originalName: file.originalname
         });
     }
@@ -199,8 +199,7 @@ app.post("/print", (req, res) => {
 
 server.listen(port, () => {
     console.log(`✅ Server running at http://localhost:${port}/`);
-});  
-
+});
 function queueNumberincrese( ) {
     queueNumber +=1
 }
