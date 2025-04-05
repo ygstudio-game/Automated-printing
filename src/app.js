@@ -62,7 +62,8 @@ io.on("connection", (socket) => {
     socket.on("printCompleted", (queueNumber) => {
         printQueue = printQueue.filter(req => req.queueNumber !== queueNumber);
         io.emit("updateQueue", printQueue); // Update all connected clients
-        console.log(`✅ Queue ${queueNumber} removed after printing.`);
+    io.emit("printingStarted", queueNumber);
+    console.log(`✅ Queue ${queueNumber} removed after printing.`);
     });
     socket.on("registerMerchant", () => {
         merchantSocket = socket;
@@ -111,14 +112,7 @@ app.post("/saveMerchant", (req, res) => {
 
     res.json({ success: true, message: "Merchant details saved" });
 });
-app.post("/saveMerchantIp", (req, res) => {
-    const { ip } = req.body;
-    if (!ip) return res.status(400).json({ message: "IP required" });
-  
-    merchantIp = ip;
-    console.log("🖥️ Merchant IP saved:", ip);
-    res.json({ message: "Merchant IP saved successfully." });
-  });
+ 
 // Generate UPI QR for payment
 app.get("/generateQR", async (req, res) => {
     const clientUrl = `https://automated-printing.onrender.com/index.html?mode=client`;
@@ -213,47 +207,7 @@ app.get("/get-printer", async (req, res) => {
     }
 });
  
-
-
-// Handle the actual print request
-// app.post("/print", (req, res) => {
-//     const { queueNumber } = req.body;
-//     const request = printQueue.find(req => req.queueNumber === queueNumber);
-
-//     if (!request) {
-//         return res.status(400).json({ error: "Print request not found" });
-//     }
-
-//     const { files, printerSettings } = request;
-//     const { printer, colorMode, copies } = printerSettings;
-//     const isMonochrome = colorMode === "grayscale"; 
-
-//     const printPromises = files.map(file => {
-//         const filePathLocal = path.join(__dirname, "uploads", path.basename(file.filePath));
-
-//         if (!fs.existsSync(filePathLocal)) {
-//             return Promise.reject(new Error(`File not found: ${filePathLocal}`));
-//         }
-
-//         return pdfToPrinter.print(filePathLocal, {
-//             printer: printer,
-//             monochrome: isMonochrome,
-//             copies: parseInt(copies),
-//         });
-//     });
-
-//     Promise.all(printPromises)
-//         .then(() => {
-//             printQueue = printQueue.filter(req => req.queueNumber !== queueNumber);
-//             io.emit("printingStarted", queueNumber);
-//             io.emit("updateQueue", printQueue); // Update UI after printing
-//             res.json({ success: true });
-
-//         })
-//         .catch(err => {
-//             res.status(500).json({ error: err.message });
-//         });
-// });
+ 
 
 app.post("/print", (req, res) => {
     const { queueNumber } = req.body;
