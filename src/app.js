@@ -47,7 +47,11 @@ app.get("/", (req, res) => {
  
 io.on("connection", (socket) => {
     console.log("Client connected:", socket.id);
-
+    socket.on("printCompleted", (queueNumber) => {
+        printQueue = printQueue.filter(req => req.queueNumber !== queueNumber);
+        io.emit("updateQueue", printQueue); // Update all connected clients
+        console.log(`✅ Queue ${queueNumber} removed after printing.`);
+    });
     socket.on("registerMerchant", () => {
         merchantSocket = socket;
         console.log("Merchant registered:", socket.id);
@@ -189,11 +193,7 @@ app.get("/get-printer", async (req, res) => {
         res.json({ printers: merchantPrinters }); // Fallback to stored list
     }
 });
-socket.on("printCompleted", (queueNumber) => {
-    printQueue = printQueue.filter(req => req.queueNumber !== queueNumber);
-    io.emit("updateQueue", printQueue); // Update all connected clients
-    console.log(`✅ Queue ${queueNumber} removed after printing.`);
-});
+ 
 
 
 // Handle the actual print request
