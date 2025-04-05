@@ -239,6 +239,16 @@ app.post("/print", (req, res) => {
     io.emit("printInitiated", queueNumber);
     res.json({ success: true, message: "Print trigger sent to merchant page" });
 });
+app.get("/get-request", (req, res) => {
+    const queueNumber = req.query.queueNumber;
+    const request = printQueue.find(req => req.queueNumber === queueNumber);
+
+    if (!request) {
+        return res.status(404).json({ error: "Request not found" });
+    }
+
+    res.json(request);
+});
 
 
 
