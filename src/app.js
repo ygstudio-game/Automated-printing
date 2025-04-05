@@ -45,7 +45,18 @@ app.get("/index.html", (req, res) => {
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "../public/index.html"));
 });
- 
+ // In server.js or wherever your Express app is
+app.post("/print-status", (req, res) => {
+    const { queueNumber, status } = req.body;
+  
+    if (status === "printCompleted") {
+      console.log(`✅ Print completed for queue #${queueNumber}`);
+      io.emit("printCompleted", { queueNumber }); // ✅ this will work!
+    }
+  
+    res.sendStatus(200);
+  });
+  
 io.on("connection", (socket) => {
     console.log("Client connected:", socket.id);
     socket.on("printCompleted", (queueNumber) => {
