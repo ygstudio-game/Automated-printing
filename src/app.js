@@ -23,7 +23,6 @@ app.use(cors({
 
 let queueNumber=0;
 
-app.use(cors());
 app.use(express.json());
 
 const port = process.env.PORT || 6822;
