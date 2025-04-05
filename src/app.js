@@ -22,6 +22,7 @@ app.use(cors({
 }));
 
 let queueNumber=0;
+let merchantIp = "";
 
 app.use(express.json());
 
@@ -99,7 +100,14 @@ app.post("/saveMerchant", (req, res) => {
 
     res.json({ success: true, message: "Merchant details saved" });
 });
-
+app.post("/saveMerchantIp", (req, res) => {
+    const { ip } = req.body;
+    if (!ip) return res.status(400).json({ message: "IP required" });
+  
+    merchantIp = ip;
+    console.log("🖥️ Merchant IP saved:", ip);
+    res.json({ message: "Merchant IP saved successfully." });
+  });
 // Generate UPI QR for payment
 app.get("/generateQR", async (req, res) => {
     const clientUrl = `https://automated-printing.onrender.com/index.html?mode=client`;
@@ -237,19 +245,37 @@ app.get("/get-printer", async (req, res) => {
 // });
 
 
-
-app.post("/print", (req, res) => {
+app.post("/print", async (req, res) => {
     const { queueNumber } = req.body;
     const request = printQueue.find(req => req.queueNumber === queueNumber);
-
+  
     if (!request) {
-        return res.status(400).json({ error: "Print request not found" });
+      return res.status(400).json({ error: "Print request not found" });
     }
-
-    // Just update the queue state; actual printing happens on merchant's end
-    io.emit("printInitiated", queueNumber);
-    res.json({ success: true, message: "Print trigger sent to merchant page" });
-});
+  
+    if (!merchantIp) {
+      return res.status(500).json({ error: "Merchant IP not set." });
+    }
+  
+    try {
+      const response = await fetch(`http://${merchantIp}:3001/download-and-print`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(request)
+      });
+  
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`Merchant print error: ${text}`);
+      }
+  
+      res.json({ success: true, message: "Print command sent to merchant." });
+    } catch (err) {
+      console.error("Error contacting merchant:", err.message);
+      res.status(500).json({ error: "Failed to contact merchant printer." });
+    }
+  });
+  
 app.get("/get-request", (req, res) => {
     const queueNumber = req.query.queueNumber;
     const request = printQueue.find(req => req.queueNumber == queueNumber); // use == for string/number match
