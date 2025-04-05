@@ -329,7 +329,7 @@ function saveMerchantDetails() {
     .then(data => {
         if (data.success) {
             alert("Print job initiated!");
-            socket.emit("removeRequest", queueNumber); // Automatically remove after printing
+            // socket.emit("removeRequest", queueNumber); // Automatically remove after printing
         } else {
             alert("Error printing files: " + data.error);
         }
@@ -339,6 +339,7 @@ function saveMerchantDetails() {
 
 
 }
+
 socket.on("printingStarted", (queueNumber) => {
     document.getElementById("printStatus").innerText = `Your print is ready! Please collect it with Queue Number: ${queueNumber}`;
 

@@ -189,7 +189,12 @@ app.get("/get-printer", async (req, res) => {
         res.json({ printers: merchantPrinters }); // Fallback to stored list
     }
 });
- 
+socket.on("printCompleted", (queueNumber) => {
+    printQueue = printQueue.filter(req => req.queueNumber !== queueNumber);
+    io.emit("updateQueue", printQueue); // Update all connected clients
+    console.log(`✅ Queue ${queueNumber} removed after printing.`);
+});
+
 
 // Handle the actual print request
 // app.post("/print", (req, res) => {
