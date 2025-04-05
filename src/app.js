@@ -13,6 +13,14 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 const axios = require("axios"); // Ensure axios is required
+const cors = require("cors");
+
+// Allow only your deployed frontend
+app.use(cors({
+    origin: "https://automated-printing.onrender.com",
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type"]
+}));
 
 let queueNumber=0;
 
