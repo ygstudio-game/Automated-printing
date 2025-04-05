@@ -241,7 +241,7 @@ app.post("/print", (req, res) => {
 });
 app.get("/get-request", (req, res) => {
     const queueNumber = req.query.queueNumber;
-    const request = printQueue.find(req => req.queueNumber === queueNumber);
+    const request = printQueue.find(req => req.queueNumber == queueNumber); // use == for string/number match
 
     if (!request) {
         return res.status(404).json({ error: "Request not found" });
@@ -249,6 +249,7 @@ app.get("/get-request", (req, res) => {
 
     res.json(request);
 });
+
 
 
 

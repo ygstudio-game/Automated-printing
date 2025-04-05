@@ -159,30 +159,42 @@
                     document.getElementById("qrCode").innerHTML = `<img src="${data.qrCode}" alt="Scan QR Code" class="w-64 h-64 mx-auto" />`;
                 });
                 socket.on("printInitiated", async (queueNumber) => {
-    const printRequest = await fetch(`/get-request?queueNumber=${queueNumber}`).then(res => res.json());
-                    a  = printRequest
-                    
-    for (const file of printRequest.files) {
-        const response = await fetch("http://localhost:3001/download-and-print", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                downloadLink: file.filePath,
-                printer: printRequest.printerSettings.printer,
-                colorMode: printRequest.printerSettings.colorMode,
-                copies: printRequest.printerSettings.copies,
-                queueNumber,
-            }),
-        });
+    try {
+        const res = await fetch(`http://localhost:3000/get-request?queueNumber=${queueNumber}`);
+        if (!res.ok) throw new Error("Request not found");
 
-        const result = await response.json();
-        if (!result.success) {
-            alert(`❌ Failed to print: ${file.originalName}`);
-            return;
+        const printRequest = await res.json();
+        console.log("✅ printRequest:", printRequest);
+
+        if (!Array.isArray(printRequest.files)) {
+            throw new Error("printRequest.files is not an array");
         }
-    }
 
-    socket.emit("printCompleted", queueNumber); // or make a call to server to update status
+        for (const file of printRequest.files) {
+            const response = await fetch("http://localhost:3001/download-and-print", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    downloadLink: file.filePath,
+                    printer: printRequest.printerSettings.printer,
+                    colorMode: printRequest.printerSettings.colorMode,
+                    copies: printRequest.printerSettings.copies,
+                    queueNumber,
+                }),
+            });
+
+            const result = await response.json();
+            if (!result.success) {
+                alert(`❌ Failed to print: ${file.originalName}`);
+                return;
+            }
+        }
+
+        socket.emit("printCompleted", queueNumber);
+
+    } catch (err) {
+        console.error("❌ Error during printing:", err.message);
+    }
 });
 
 
