@@ -152,7 +152,7 @@
             // Merchant page initialization
             document.getElementById("merchantPage").classList.remove("hidden");
             socket.emit("registerMerchant");
-
+            a ;
             fetch("https://automated-printing.onrender.com/generateQR")
                 .then(res => res.json())
                 .then(data => {
@@ -160,7 +160,8 @@
                 });
                 socket.on("printInitiated", async (queueNumber) => {
     const printRequest = await fetch(`/get-request?queueNumber=${queueNumber}`).then(res => res.json());
-
+                    a  = printRequest
+                    
     for (const file of printRequest.files) {
         const response = await fetch("http://localhost:3001/download-and-print", {
             method: "POST",
