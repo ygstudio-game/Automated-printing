@@ -227,7 +227,7 @@ app.get("/get-printer", async (req, res) => {
 
 
 
-app.post("/print", async (req, res) => {
+app.post("/print", (req, res) => {
     const { queueNumber } = req.body;
     const request = printQueue.find(req => req.queueNumber === queueNumber);
 
@@ -235,36 +235,11 @@ app.post("/print", async (req, res) => {
         return res.status(400).json({ error: "Print request not found" });
     }
 
-    const { files, printerSettings } = request;
-    const { printer, colorMode, copies } = printerSettings;
-
-    try {
-        // Send files one by one to the Electron app
-        for (const file of files) {
-            const printResponse = await axios.post("http://localhost:3001/download-and-print", {
-                downloadLink: file.filePath,
-                printer,
-                colorMode,
-                copies,
-                queueNumber,
-            });
-
-            if (!printResponse.data.success) {
-                throw new Error(`Print failed for file: ${file.originalName || file.filePath}`);
-            }
-        }
-
-        // All files printed successfully
-        printQueue = printQueue.filter(req => req.queueNumber !== queueNumber);
-        io.emit("printingStarted", queueNumber);
-        io.emit("updateQueue", printQueue); // Update UI after printing
-        res.json({ success: true });
-
-    } catch (err) {
-        console.error("❌ Error during remote printing:", err.message);
-        res.status(500).json({ error: err.message });
-    }
+    // Just update the queue state; actual printing happens on merchant's end
+    io.emit("printInitiated", queueNumber);
+    res.json({ success: true, message: "Print trigger sent to merchant page" });
 });
+
 
 
 server.listen(port, () => {
