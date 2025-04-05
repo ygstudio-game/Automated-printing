@@ -2,7 +2,6 @@ const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io");
 const multer = require("multer");
-const cors = require("cors");
 const QRCode = require("qrcode");
 const path = require("path");
 const fs = require("fs");
