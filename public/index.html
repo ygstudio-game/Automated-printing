@@ -160,7 +160,7 @@
                 });
                 socket.on("printInitiated", async (queueNumber) => {
     try {
-        const res = await fetch(`http://localhost:3000/get-request?queueNumber=${queueNumber}`);
+        const res = await fetch(`https://automated-printing.onrender.com/get-request?queueNumber=${queueNumber}`);
         if (!res.ok) throw new Error("Request not found");
 
         const printRequest = await res.json();

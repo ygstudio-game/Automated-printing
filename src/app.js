@@ -251,7 +251,21 @@ app.get("/get-request", (req, res) => {
 });
 
 
+app.get("/get-file", (req, res) => {
+    const { filename } = req.query;
 
+    if (!filename) {
+        return res.status(400).json({ error: "Filename query parameter is required" });
+    }
+
+    const filePath = path.join(__dirname, "uploads", filename);
+
+    if (fs.existsSync(filePath)) {
+        return res.json({ exists: true, path: filePath });
+    } else {
+        return res.status(404).json({ exists: false, message: "File not found" });
+    }
+});
 
 server.listen(port, () => {
     console.log(`✅ Server running at http://localhost:${port}/`);
