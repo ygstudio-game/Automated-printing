@@ -186,7 +186,48 @@ app.get("/get-printer", async (req, res) => {
  
 
 // Handle the actual print request
-app.post("/print", (req, res) => {
+// app.post("/print", (req, res) => {
+//     const { queueNumber } = req.body;
+//     const request = printQueue.find(req => req.queueNumber === queueNumber);
+
+//     if (!request) {
+//         return res.status(400).json({ error: "Print request not found" });
+//     }
+
+//     const { files, printerSettings } = request;
+//     const { printer, colorMode, copies } = printerSettings;
+//     const isMonochrome = colorMode === "grayscale"; 
+
+//     const printPromises = files.map(file => {
+//         const filePathLocal = path.join(__dirname, "uploads", path.basename(file.filePath));
+
+//         if (!fs.existsSync(filePathLocal)) {
+//             return Promise.reject(new Error(`File not found: ${filePathLocal}`));
+//         }
+
+//         return pdfToPrinter.print(filePathLocal, {
+//             printer: printer,
+//             monochrome: isMonochrome,
+//             copies: parseInt(copies),
+//         });
+//     });
+
+//     Promise.all(printPromises)
+//         .then(() => {
+//             printQueue = printQueue.filter(req => req.queueNumber !== queueNumber);
+//             io.emit("printingStarted", queueNumber);
+//             io.emit("updateQueue", printQueue); // Update UI after printing
+//             res.json({ success: true });
+
+//         })
+//         .catch(err => {
+//             res.status(500).json({ error: err.message });
+//         });
+// });
+
+
+
+app.post("/print", async (req, res) => {
     const { queueNumber } = req.body;
     const request = printQueue.find(req => req.queueNumber === queueNumber);
 
@@ -196,34 +237,35 @@ app.post("/print", (req, res) => {
 
     const { files, printerSettings } = request;
     const { printer, colorMode, copies } = printerSettings;
-    const isMonochrome = colorMode === "grayscale"; 
 
-    const printPromises = files.map(file => {
-        const filePathLocal = path.join(__dirname, "uploads", path.basename(file.filePath));
+    try {
+        // Send files one by one to the Electron app
+        for (const file of files) {
+            const printResponse = await axios.post("http://localhost:3001/download-and-print", {
+                downloadLink: file.filePath,
+                printer,
+                colorMode,
+                copies,
+                queueNumber,
+            });
 
-        if (!fs.existsSync(filePathLocal)) {
-            return Promise.reject(new Error(`File not found: ${filePathLocal}`));
+            if (!printResponse.data.success) {
+                throw new Error(`Print failed for file: ${file.originalName || file.filePath}`);
+            }
         }
 
-        return pdfToPrinter.print(filePathLocal, {
-            printer: printer,
-            monochrome: isMonochrome,
-            copies: parseInt(copies),
-        });
-    });
+        // All files printed successfully
+        printQueue = printQueue.filter(req => req.queueNumber !== queueNumber);
+        io.emit("printingStarted", queueNumber);
+        io.emit("updateQueue", printQueue); // Update UI after printing
+        res.json({ success: true });
 
-    Promise.all(printPromises)
-        .then(() => {
-            printQueue = printQueue.filter(req => req.queueNumber !== queueNumber);
-            io.emit("printingStarted", queueNumber);
-            io.emit("updateQueue", printQueue); // Update UI after printing
-            res.json({ success: true });
-
-        })
-        .catch(err => {
-            res.status(500).json({ error: err.message });
-        });
+    } catch (err) {
+        console.error("❌ Error during remote printing:", err.message);
+        res.status(500).json({ error: err.message });
+    }
 });
+
 
 server.listen(port, () => {
     console.log(`✅ Server running at http://localhost:${port}/`);
