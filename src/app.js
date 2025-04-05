@@ -244,37 +244,21 @@ app.get("/get-printer", async (req, res) => {
 //         });
 // });
 
-
-app.post("/print", async (req, res) => {
+app.post("/print", (req, res) => {
     const { queueNumber } = req.body;
     const request = printQueue.find(req => req.queueNumber === queueNumber);
-  
+
     if (!request) {
-      return res.status(400).json({ error: "Print request not found" });
+        return res.status(400).json({ error: "Print request not found" });
     }
-  
-    if (!merchantIp) {
-      return res.status(500).json({ error: "Merchant IP not set." });
-    }
-  
-    try {
-      const response = await fetch(`http://${merchantIp}:3001/download-and-print`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(request)
-      });
-  
-      if (!response.ok) {
-        const text = await response.text();
-        throw new Error(`Merchant print error: ${text}`);
-      }
-  
-      res.json({ success: true, message: "Print command sent to merchant." });
-    } catch (err) {
-      console.error("Error contacting merchant:", err.message);
-      res.status(500).json({ error: "Failed to contact merchant printer." });
-    }
-  });
+
+    // Emit to merchant via Socket.IO
+    io.emit("startPrint", request);
+
+    console.log("📤 Sent print request via socket to merchant:", queueNumber);
+    res.json({ success: true, message: "Print request sent to merchant" });
+});
+
   
 app.get("/get-request", (req, res) => {
     const queueNumber = req.query.queueNumber;
