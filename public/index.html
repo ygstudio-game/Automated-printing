@@ -322,7 +322,7 @@ body.light-theme .offcanvas.offcanvas-start {
     <div  >
       <div class="glass-card text-center mb-5 hero-qr">
         <h2 class="section-title">Merchant Dashboard</h2>
-        <img id="qrCode"  src=" " alt="Generating Code" />
+        <div id="qrCode"  src=" " alt="Generating Code"></div> />
         <p class="text-opacity-70">Scan this QR to upload files directly</p>
       </div>      
         <div id="printRequests" class="mt-5"> 
@@ -400,40 +400,12 @@ body.light-theme .offcanvas.offcanvas-start {
 </div>
 
   <!-- Scripts -->
-  <script>
-  function showUploadStatus(e) {
-      e.preventDefault();
-      const status = document.getElementById("uploadStatus");
-      status.innerHTML = `<div class="text-info d-flex justify-content-center align-items-center">
-        <div class="spinner-border text-info" role="status"></div>
-        <span class="ms-2">Uploading...</span>
-      </div>`;
-
-      setTimeout(() => {
-        status.innerHTML = 
-         ` <div class="text-success text-center fadeIn">
-            <div>✅ Upload complete!</div>
-      <img src="/path/to/generated-qr.png" id="payQrcode" alt="QR Code" class="my-3" style="width: 120px;" />
-             <p id="Filename">new.pdf</p>
-            <p id="EstimatedCost"><strong>Estimated Cost:</strong> ₹15</p>
-            <p id="queueNumber"><strong>Queue Number:</strong> 1</p>
-            <a href="upi://pay?pa=merchant@upi&pn=PrintShop&am=15" 
-               class="btn btn-success d-block d-sm-none mt-2" style="border-radius: 9999px;">
-              📱 Pay Now
-            </a>
-          </div>;`
-      }, 2000);
-    }
+  <script> 
     function toggleTheme() {
       document.body.classList.toggle("light-theme");
       const icon = document.getElementById("themeIcon");
       icon.textContent = document.body.classList.contains("light-theme") ? "☀️" : "🌙";
     }
-
- 
- 
-
-   
   </script>
   
   <script>
@@ -553,6 +525,15 @@ socket.emit("removeRequest", queueNumber);
 
     // Client file upload handler
     function uploadFiles() {
+        const status = document.getElementById("uploadStatus");
+      status.innerHTML = `<div class="text-info d-flex justify-content-center align-items-center">
+        <div class="spinner-border text-info" role="status"></div>
+        <span class="ms-2">Uploading...</span>
+      </div>`;
+
+      setTimeout(() => { 
+ 
+
         const files = document.getElementById("fileInput").files;
         const printerName = document.getElementById("printerSelect").value;
         const colorMode = document.getElementById("colorMode").value;
@@ -597,6 +578,7 @@ console.error("Upload error:", err);
 alert("Error uploading files. Please try again.");
 });
 
+}, 2000);
 
     }
 
