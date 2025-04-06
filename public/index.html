@@ -379,15 +379,7 @@ body.light-theme .offcanvas.offcanvas-start {
     <button onclick="uploadFiles()" class="glow-button w-100 mt-3" id="uploadPrintButton">Upload & Print</button>
     <div id="uploadStatus" class="upload-status text-center">
         
-      <div class="text-success text-center fadeIn">
-        <div>✅ Upload complete!</div> 
-  <div id="clientQrCode" class="my-4 text-center my-3" style="width: 120px;"></div>
-         <p id="Filename">new.pdf</p>
-        <p id="clientPrintCost"><strong>Estimated Cost:</strong> ₹15</p>
-        <p id="queueNumberClient"><strong>Queue Number:</strong> 1</p>
-        <div id="upiPaymentButton" class="mt-4"></div>
-        <p id="printStatus" class="text-xl text-blue-800 font-semibold mt-4"></p>
-      </div>
+    
     </div>
 
       </div>
@@ -519,8 +511,6 @@ queue.forEach(request => {
     function removeRequest(queueNumber) {
 socket.emit("removeRequest", queueNumber);
 }
-a;
-b;
     // Client file upload handler
     function uploadFiles() {
         const status = document.getElementById("uploadStatus");
@@ -547,7 +537,6 @@ b;
         formData.append("printer", printerName);
         formData.append("colorMode", colorMode);
         formData.append("copies", copies);
-       a =formData
         
         fetch("https://automated-printing.onrender.com/upload", {
 method: "POST",
@@ -556,7 +545,6 @@ body: formData
 .then(res => res.json())
 .then(data => {
 console.log("Upload Response:", data); // Debugging line
-b=data;
 if (!data.request || !data.request.files) {
     throw new Error("Invalid response from server. Missing 'files' property.");
 }
@@ -639,13 +627,11 @@ console.log(34);
 }
 
 socket.on("printingStarted", (queueNumber) => {
+    console.log("completed ",queueNumber);
+    
 document.getElementById("printStatus").innerText = `Your print is ready! Please collect it with Queue Number: ${queueNumber}`;
-
-// Remove QR code and payment button
-document.getElementById("clientPrintCost").parentElement.innerHTML = "";
-document.getElementById("queueNumberClient").parentElement.innerHTML = "";
-document.getElementById("clientQrCode").innerHTML = "";
-document.getElementById("upiPaymentButton").innerHTML = "";});
+ 
+});
 
 
 
