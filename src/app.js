@@ -159,7 +159,8 @@ app.post("/upload", upload.array("files"), async (req, res) => {
             originalName: file.originalname
         });
     }
-
+        console.log(`pagees ${pages}`);
+        
     const upiUrl = `upi://pay?pa=${merchantDetails.upiId}&pn=${merchantDetails.shopName}&mc=0000&tid=123456&tr=TXN${Date.now()}&tn=PrintPayment&am=${totalCost}&cu=INR`;
     const qrCode = await QRCode.toDataURL(upiUrl);
 
