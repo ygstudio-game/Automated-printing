@@ -479,7 +479,7 @@ queue.forEach(request => {
  p-1"  /></div> 
         <div class="d-flex gap-3 mt-4">
           <button class="btn btn-outline-light w-50" id="confirmButton" onclick="confirmPayment(${request.queueNumber})">Confirm</button>
-          <button id="printButton-${request.queueNumber}" class="glow-button w-50 ${request.paymentConfirmed ? 'bg-blue-500' : 'bg-gray-500'} text-white p-2 rounded ml-2"  onclick="printFiles(${request.queueNumber})" ${request.paymentConfirmed ? '' : 'disabled'}>Print</button>
+          <button id="printButton-${request.queueNumber}" class="glow-button w-50 ${request.paymentConfirmed ? 'cursor-pointer' : 'cursor-not-allowed'} text-white p-2 rounded ml-2"  onclick="printFiles(${request.queueNumber})" ${request.paymentConfirmed ? '' : 'disabled'}>Print</button>
         </div>
       </div>
       </div>
@@ -533,7 +533,7 @@ if (!data.request || !data.request.files) {
     throw new Error("Invalid response from server. Missing 'files' property.");
 }
 
-status.innerHTML = `<div class="text-success text-center fadeIn">
+status.innerHTML = `<div class="text-[#50d71e]text-center fadeIn">
         <div>✅ Upload complete!</div> 
   <div id="clientQrCode" class="my-4 text-center my-3" ><img src="${data.request.upiQrCode}" alt="Payment QR Code" class="w-64 h-64 mx-auto" /></div>
          <p id="Filename">new.pdf</p>
