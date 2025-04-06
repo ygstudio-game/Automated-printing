@@ -520,7 +520,8 @@ queue.forEach(request => {
     function removeRequest(queueNumber) {
 socket.emit("removeRequest", queueNumber);
 }
-
+a;
+b;
     // Client file upload handler
     function uploadFiles() {
         const status = document.getElementById("uploadStatus");
@@ -547,7 +548,7 @@ socket.emit("removeRequest", queueNumber);
         formData.append("printer", printerName);
         formData.append("colorMode", colorMode);
         formData.append("copies", copies);
-        console.log(formData);
+       a =formData
         
         fetch("https://automated-printing.onrender.com/upload", {
 method: "POST",
@@ -556,13 +557,14 @@ body: formData
 .then(res => res.json())
 .then(data => {
 console.log("Upload Response:", data); // Debugging line
+b=data;
 if (!data.request || !data.request.files) {
     throw new Error("Invalid response from server. Missing 'files' property.");
 }
 
 status.innerHTML = `<div class="text-success text-center fadeIn">
         <div>✅ Upload complete!</div> 
-  <div id="clientQrCode" class="my-4 text-center my-3" style="width: 120px;"><img src="${data.request.upiQrCode}" alt="Payment QR Code" class="w-64 h-64 mx-auto" /></div>
+  <div id="clientQrCode" class="my-4 text-center my-3" ><img src="${data.request.upiQrCode}" alt="Payment QR Code" class="w-64 h-64 mx-auto" /></div>
          <p id="Filename">new.pdf</p>
         <p id="clientPrintCost"><strong>Estimated Cost:</strong> ₹ ${data.request.totalCost}</p>
         <p id="queueNumberClient"><strong>Queue Number:</strong>${data.request.queueNumbe}</p>
