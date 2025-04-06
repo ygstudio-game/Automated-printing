@@ -322,7 +322,7 @@ body.light-theme .offcanvas.offcanvas-start {
     <div  >
       <div class="glass-card text-center mb-5 hero-qr">
         <h2 class="section-title">Merchant Dashboard</h2>
-        <div id="qrCode"  src=" " alt="Generating Code"></div> />
+        <div id="qrCode"  src=" " alt="Generating Code"></div> 
         <p class="text-opacity-70">Scan this QR to upload files directly</p>
       </div>      
         <div id="printRequests" class="mt-5"> 
@@ -532,7 +532,8 @@ socket.emit("removeRequest", queueNumber);
       </div>`;
 
       setTimeout(() => { 
- 
+        console.log(56);
+        
 
         const files = document.getElementById("fileInput").files;
         const printerName = document.getElementById("printerSelect").value;
