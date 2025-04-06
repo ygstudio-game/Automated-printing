@@ -479,15 +479,14 @@ queue.forEach(request => {
  p-1"  /></div> 
         <div class="d-flex gap-3 mt-4">
           <button class="btn btn-outline-light w-50" id="confirmButton" onclick="confirmPayment(${request.queueNumber})">Confirm</button>
-          <button class="glow-button w-50" id="printButton-${request.queueNumber}" class="${request.paymentConfirmed ? 'bg-blue-500' : 'bg-gray-500'} text-white p-2 rounded ml-2"  onclick="printFiles(${request.queueNumber})" ${request.paymentConfirmed ? '' : 'disabled'}>Print</button>
+          <button id="printButton-${request.queueNumber}" class="glow-button w-50 ${request.paymentConfirmed ? 'bg-blue-500' : 'bg-gray-500'} text-white p-2 rounded ml-2"  onclick="printFiles(${request.queueNumber})" ${request.paymentConfirmed ? '' : 'disabled'}>Print</button>
         </div>
       </div>
       </div>
          <hr class="my-4">
     `;
+
     queueDiv.appendChild(div);
-    console.log(request.queueNumber);
-    
 });
 
 }); 
