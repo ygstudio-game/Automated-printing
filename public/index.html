@@ -387,10 +387,9 @@ body.light-theme .offcanvas.offcanvas-start {
         <p id="queueNumberClient"><strong>Queue Number:</strong> 1</p>
         <div id="upiPaymentButton" class="mt-4"></div>
         <p id="printStatus" class="text-xl text-blue-800 font-semibold mt-4"></p>
-
       </div>
-
     </div>
+
       </div>
     </div>
   </div>
@@ -561,15 +560,16 @@ if (!data.request || !data.request.files) {
     throw new Error("Invalid response from server. Missing 'files' property.");
 }
 
-document.getElementById("clientQrCode").innerHTML = 
-    `<img src="${data.request.upiQrCode}" alt="Payment QR Code" class="w-64 h-64 mx-auto" />`;
-
-document.getElementById("clientPrintCost").innerText = data.request.totalCost;
-document.getElementById("queueNumberClient").innerText = data.request.queueNumber;  
-// Add UPI payment URL button
-document.getElementById("upiPaymentButton").innerHTML = 
-        `<a href="${data.request.upiUrl}" class="bg-green-500 text-white p-2 rounded block text-center mt-3" target="_blank">📱 Pay Now</a>`;
-alert("Files sent to merchant! Please scan the QR code to pay.");
+status.innerHTML = `<div class="text-success text-center fadeIn">
+        <div>✅ Upload complete!</div> 
+  <div id="clientQrCode" class="my-4 text-center my-3" style="width: 120px;"><img src="${data.request.upiQrCode}" alt="Payment QR Code" class="w-64 h-64 mx-auto" /></div>
+         <p id="Filename">new.pdf</p>
+        <p id="clientPrintCost"><strong>Estimated Cost:</strong> ₹ ${data.request.totalCost}</p>
+        <p id="queueNumberClient"><strong>Queue Number:</strong>${data.request.queueNumbe}</p>
+        <div id="upiPaymentButton" class="mt-4"></div>
+        <p id="printStatus" class="text-xl text-blue-800 font-semibold mt-4"><a href="${data.request.upiUrl}" class="bg-green-500 text-white p-2 rounded block text-center mt-3" target="_blank">📱 Pay Now</a></p>
+      </div>
+    </div>` 
 })
 .catch(err => {
 console.error("Upload error:", err);
