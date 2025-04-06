@@ -433,7 +433,8 @@ body.light-theme .offcanvas.offcanvas-start {
 })
 .catch(error => console.error('Error fetching printers:', error));
 
-    } else {
+    } 
+    else {
         // Merchant page initialization
         document.getElementById("merchantPage").classList.remove("d-none");
         socket.emit("registerMerchant");
@@ -530,10 +531,7 @@ socket.emit("removeRequest", queueNumber);
         <div class="spinner-border text-info" role="status"></div>
         <span class="ms-2">Uploading...</span>
       </div>`;
-
-      setTimeout(() => { 
-        console.log(56);
-        
+ 
 
         const files = document.getElementById("fileInput").files;
         const printerName = document.getElementById("printerSelect").value;
@@ -579,7 +577,6 @@ console.error("Upload error:", err);
 alert("Error uploading files. Please try again.");
 });
 
-}, 2000);
 
     }
 
