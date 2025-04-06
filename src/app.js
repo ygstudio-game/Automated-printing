@@ -177,7 +177,8 @@ app.post("/upload", upload.array("files"), async (req, res) => {
         upiUrl // Add the UPI URL for redirection
 
     };
-
+    console.log(newRequest);
+    
     printQueue.push(newRequest);
     io.emit("updateQueue", printQueue);  // Send updated queue to merchant UI
 
