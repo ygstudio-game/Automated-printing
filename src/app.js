@@ -158,13 +158,10 @@ app.post("/upload", upload.array("files"), async (req, res) => {
             filePath: `https://automated-printing.onrender.com/uploads/${file.filename}`,
             originalName: file.originalname
         });
-        console.log(`pagees ${pages}`);
-        console.log(`totalCost ${totalCost}`);
     }
         
     const upiUrl = `upi://pay?pa=${merchantDetails.upiId}&pn=${merchantDetails.shopName}&mc=0000&tid=123456&tr=TXN${Date.now()}&tn=PrintPayment&am=${totalCost}&cu=INR`;
     const qrCode = await QRCode.toDataURL(upiUrl);
-    console.log(`totalCost f ${totalCost}`);
 
     const newRequest = {
         queueNumber,
@@ -180,7 +177,6 @@ app.post("/upload", upload.array("files"), async (req, res) => {
         upiUrl // Add the UPI URL for redirection
 
     };
-    console.log(newRequest);
     
     printQueue.push(newRequest);
     io.emit("updateQueue", printQueue);  // Send updated queue to merchant UI
