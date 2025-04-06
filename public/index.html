@@ -1,358 +1,675 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="en" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Print System</title>
-    <script src="/socket.io/socket.io.js"></script>
-    <!-- online links for intregrating css and js -->
-     
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QR Print System</title>
+
+  <link rel="icon" href="/path/to/favicon.png" type="image/png" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+::placeholder {
+  color: rgba(241, 245, 249, 0.6);
+  opacity: 1;
+}
+body.light-theme ::placeholder {
+  color: rgba(31, 41, 55, 0.5);
+}
+input.form-control:focus,
+select.form-select:focus {
+  border-color: #f4cca4;
+  box-shadow: 0 0 0 0.2rem rgba(244, 204, 164, 0.25);
+  background-color: rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+  color: inherit;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: rgba(241, 245, 249, 0.808) !important;
+  opacity: 0.5 !important;
+}
+body.light-theme input::placeholder,
+body.light-theme textarea::placeholder {
+  color: rgba(31, 41, 55, 0.5);
+}
+body {
+  font-family: 'Poppins', sans-serif;
+  /* background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); */
+  color: #f1f5f9;
+  min-height: 100vh;
+  transition: background 0.4s ease, color 0.4s ease;
+      animation: moveBackground 20s ease-in-out infinite;
+      background: 
+        radial-gradient(at 49% 26%, #ba135d 0px, transparent 50%), 
+        radial-gradient(at 54% 4%, #f4cca4 0px, transparent 50%), 
+        radial-gradient(at 59% 91%, #d99879 0px, transparent 50%), 
+        radial-gradient(at 8% 23%, #000000 0px, transparent 50%), 
+         #09203f;
+      background-size: 150% 150%;
+    }
+
+    @keyframes moveBackground {
+      0% {
+        background-position: 0% 0%;
+      }
+      50% {
+        background-position: 100% 100%;
+      }
+      100% {
+        background-position: 0% 0%;
+      }
+    }
+.light-theme {
+  /* background: linear-gradient(135deg, #e0eafc, #cfdef3); */
+  background-color: #76799f;
+  color: #1f2937;
+}
+.glass-card {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 1rem;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+  padding: 2rem;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: slideFadeIn 0.6s ease forwards;
+}
+@keyframes slideFadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.glass-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 36px rgba(0, 0, 0, 0.5);
+} 
+.glow-button:hover {
+  transform: scale(1.05);
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(186, 19, 93, 0.7);
+  box-shadow: 0 0 20px #00c6ff;
+}
+.glow-button {
+  background: linear-gradient(to right, #00c6ff, #0072ff);
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border-radius: 12px;
+  font-weight: 500;
+  border: none;
+  box-shadow: 0 0 10px rgba(186, 19, 93, 0.5);
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+} 
+.section-title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+input.form-control,
+select.form-select {
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  color: inherit;
+  transition: all 0.3s ease;
+  padding: 0.75rem 1rem;
+}
+input.form-control:focus,
+select.form-select:focus {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #00c6ff;
+  box-shadow: 0 0 12px rgba(0, 198, 255, 0.4);
+  outline: none;
+}
+select.form-select option {
+  background-color: #1f2937;
+  color: #f8fafc;
+}
+body.light-theme select.form-select option {
+  background-color: #fff;
+  color: #1f2937;
+}
+.form-label {
+  font-weight: 500;
+  margin-bottom: 0.4rem;
+  display: inline-block;
+}
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  color: white;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: color 0.4s ease;
+  transition: background 0.3s ease;
+}
+.theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+.theme-toggle span {
+  animation: glowPulse 2s infinite ease-in-out;
+}
+@keyframes glowPulse {
+  0%, 100% { text-shadow: 0 0 0 transparent; }
+  50% { text-shadow: 0 0 10px #00c6ff; }
+}
+body.light-theme .theme-toggle {
+  color: #1f2937;
+}
+.upload-status {
+  margin-top: 1.5rem;
+  font-weight: 500;
+  animation: fadeIn 0.4s ease;
+}
+.spinner-border {
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-right: 0.5rem;
+  vertical-align: text-bottom;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.offcanvas.offcanvas-start {
+  color: #f1f5f9;
+}
+body.light-theme .offcanvas.offcanvas-start {
+  color: #1f2937;
+}
+.offcanvas-body {
+  backdrop-filter: blur(12px);
+  background: rgb(37 27 27 / 5%);
+  border-radius: 1rem;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+img {
+  max-width: 100%;
+  height: auto;
+  border: 2px solid #fff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  border-radius: 0.5rem;
+}
+img.qr-code {
+  border: 2px solid #ccc;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  padding: 8px;
+  background-color: #fff;
+  border-radius: 0.5rem;
+}
+@media (max-width: 576px) {
+  .glass-card {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  .d-flex.gap-3.mt-4 {
+    flex-direction: column;
+  } 
+  .navbar .btn-group {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .navbar .d-flex.align-items-center {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .glass-card {
+    padding: 1rem;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+  }
+
+  .container {
+    padding: 1rem !important;
+    width: 100% !important;
+  }
+
+  .hero-qr img {
+    max-width: 80%;
+    height: auto;
+  }
+
+  .d-flex.gap-3.mt-4 {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  #printRequestTitle {
+    font-size: 1.2rem;
+  }
+} 
  
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
-        }
+@media (min-width: 550px) {
+    .container  {
+        width: 36% !important;
+    }
+}
+/* 🔄 Sidebar Glassmorphism */
+.offcanvas.offcanvas-start {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-right: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
+  color: #f1f5f9;
+  transition: all 0.4s ease;
+}
 
-        .container {
-            animation: fadeIn 0.6s ease-in-out;
-        }
+/* Light theme sidebar */
+body.light-theme .offcanvas.offcanvas-start {
+  background: rgba(255, 255, 255, 0.35);
+  color: #1f2937;
+}
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+/* 🔄 Navbar Glassmorphism */
+.navbar.bg-dark {
+  background: rgba(0, 0, 0, 0.4) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+ 
 
-        /* Button Hover Effect */
-        button {
-            transition: all 0.3s ease-in-out;
-        }
-
-        button:hover {
-            transform: scale(1.05);
-            box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
-        }
-
-        /* File Input Customization */
-        input[type="file"] {
-            border: 2px dashed #94a3b8;
-            padding: 12px;
-            text-align: center;
-            cursor: pointer;
-            background: #f8fafc;
-            transition: all 0.3s;
-        }
-
-        input[type="file"]:hover {
-            border-color: #2563eb;
-        }
-    </style>
+  </style>
 </head>
+<body>
+  <div id="merchantPage" class="d-none"  >
 
-<body class="py-8">
-    <div id="merchantPage" class="hidden container mx-auto p-6 bg-white shadow-lg rounded-lg max-w-3xl">
-        <nav class="navbar bg-body-tertiary  ">
-            <div class="container-fluid">
-              <a class="navbar-brand" href="#">        <h1 class="text-3xl font-semibold text-center mb-6 text-gray-800">Merchant Dashboard</h1></a>
-              <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-              </button>
-              <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
-                <div class="offcanvas-header">
-                  <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Merchant Dashboard</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                </div>
-                <div class="offcanvas-body">
-                  <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-                    <div class="form-floating mb-3">
-                        <input type="text" class="form-control" id="merchant-name" placeholder="Shop Name">
-                        <label >Shop Name</label>
-                      </div>
-                      <div class="form-floating">
-                        <input type="text" class="form-control" id="merchant-upi" placeholder="Upi id for payment">
-                        <label >Upi id for payment</label>
-                      </div>
-
-                      <button type="button" class="btn btn-success mt-6 w-20 mx-auto" onclick="saveMerchantDetails()"">save</button>
-
-                  </ul>
-         
-                </div>
-              </div>
-            </div>
-          </nav>
-        <div id="qrCode" class="text-center text-gray-600">Generating QR Code...</div>
-        <h1 class="text-xl font-semibold text-center mt-6 mb-6 text-red-500">Scan the Above QR Code to Upload Files</h1>
-        <h2 class="text-xl font-semibold mb-4 text-gray-800">Pending Print Requests</h2>
-        <div id="printRequests" class="mt-5"></div>
+  <!-- Navbar -->
+  <nav class="navbar navbar-dark offcanvas-start  bg-dark px-4 d-flex justify-content-between">
+    <div class="d-flex align-items-center gap-3">
+      <button class="btn btn-outline-light" data-bs-toggle="offcanvas" data-bs-target="#sidebar">☰</button>
+      <h1 class="text-white m-0 fs-5 fs-sm-4 fs-md-3 fs-lg-2">Print Dashboard</h1>
     </div>
+    <div class="theme-toggle" onclick="toggleTheme()">
+      <span id="themeIcon">🌙</span>
+    </div>
+  </nav>
 
-    <div id="clientPage" class="hidden container mx-auto p-6 bg-white shadow-lg rounded-lg max-w-lg">
-        <h1 class="text-3xl font-semibold text-center mb-6 text-gray-800">Upload Files for Printing</h1>
-        <input type="file" id="fileInput" accept=".pdf,.jpg" multiple class="block w-full p-3 mb-4 border rounded focus:ring-2 focus:ring-blue-400">
+  <!-- Sidebar -->
+  <div class="offcanvas offcanvas-start text-bg-dark" tabindex="-1" id="sidebar">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title">Merchant Profile</h5>
+      <button class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body">
+      <div class="mb-3">
+        <label class="form-label" for="merchant-name">Shop Name</label>
+        <input type="text"  id="merchant-name" class="form-control" placeholder="Enter shop name" />
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="merchant-upi">UPI ID</label>
+        <input type="text" id="merchant-upi" class="form-control" placeholder="Enter UPI ID" />
+      </div>
+      <button class="glow-button btn-success w-70 mx-auto" onclick="saveMerchantDetails()">Save</button>
+    </div>
+  </div>
 
-        <label class="block font-semibold mb-2 text-gray-700">Select Printer:</label>
-        <select id="printerSelect" class="w-full p-3 mb-4 border rounded focus:ring-2 focus:ring-blue-400"></select>
+  <!-- Main Content -->
+  <div class="container py-5">
+    <!-- Merchant Page -->
+    <div id="merchantPage">
+      <div class="glass-card text-center mb-5 hero-qr">
+        <h2 class="section-title">Merchant Dashboard</h2>
+        <img id="qrCode"  src=" " alt="Generating Code" />
+        <p class="text-opacity-70">Scan this QR to upload files directly</p>
+      </div>      
+        <div id="printRequests" class="mt-5"> 
+      <div class="glass-card mb-4" id="merchantRequestCard">
+        <h5 class="text-lg font-medium mb-3" id="printRequestTitle">
+          Print Request
+           <div id="queueNumber">#101</div>
+           <div id="Filename">new.pdf</div>
+        </h5>
+        <p><strong>Printer:</strong> <span id="merchantPrinter">HP LaserJet</span></p>
+        <p><strong>Mode:</strong> <span id="merchantMode">Black & White</span> | 
+           <strong>Copies:</strong> <span id="merchantCopies">2</span></p>
+        <p><strong>Cost:</strong> ₹<span id="merchantCost">10</span></p>
+        <img src="" id="merchantQR" class="bg-white rounded mt-3 p-1" style="width: 80px;" />
+        <div class="d-flex gap-3 mt-4">
+          <button class="btn btn-outline-light w-50" id="confirmButton">Confirm</button>
+          <button class="glow-button w-50" id="printButton">Print</button>
+        </div>
+      </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-        <label class="block font-semibold mb-2 text-gray-700">Color Mode:</label>
-        <select id="colorMode" class="w-full p-3 mb-4 border rounded focus:ring-2 focus:ring-blue-400">
-            <option value="color">Color</option>
-            <option value="grayscale">Black & White</option>
-        </select>
+  <div id="clientPage" class="d-none">
 
-        <label class="block font-semibold mb-2 text-gray-700">Copies:</label>
-        <input type="number" id="copies" min="1" value="1" class="block w-full p-3 mb-4 border rounded focus:ring-2 focus:ring-blue-400">
 
-        <button onclick="uploadFiles()" class="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition">Upload & Print</button>
+  <div class="container py-5">
 
-        <div id="clientQrCode" class="my-4 text-center"></div>
-        <p class="text-lg font-semibold text-gray-800">Estimated Cost: ₹<span id="clientPrintCost"></span></p>
-        <p class="text-lg font-semibold text-gray-800">Queue Number: <span id="queueNumberClient"></span></p>
+    <!-- Customer Page -->
+    <div id="customerPage" > 
+      <div class="glass-card">
+        <h2 class="section-title text-center">Upload Files to Print</h2>
+     <!-- Customer Upload Form -->
+<form onsubmit="showUploadStatus(event)">
+    <div class="mb-3">
+        <input type="file" id="fileInput" class="form-control" multiple accept=".pdf,.jpg" required   />
+      </div>
+    <div class="mb-3">
+      <label class="form-label" for="printerSelect">Select Printer</label>
+      <select id="printerSelect" class="form-select">
+      </select>
+    </div>
+    <div class="mb-3">
+      <label class="form-label" for="colorMode">Color Mode</label>
+      <select id="colorMode" class="form-select">
+        <option>Color</option>
+        <option>Black & White</option>
+      </select>
+    </div>
+    <div class="mb-3">
+      <label class="form-label" for="copies">Number of Copies</label>
+      <input type="number" id="copies" class="form-control" value="1" min="1" />
+    </div>
+    <button onclick="uploadFiles()" class="glow-button w-100 mt-3" id="uploadPrintButton">Upload & Print</button>
+    <div id="uploadStatus" class="upload-status text-center">
+        
+      <div class="text-success text-center fadeIn">
+        <div>✅ Upload complete!</div> 
+  <div id="clientQrCode" class="my-4 text-center my-3" style="width: 120px;"></div>
+         <p id="Filename">new.pdf</p>
+        <p id="clientPrintCost"><strong>Estimated Cost:</strong> ₹15</p>
+        <p id="queueNumberClient"><strong>Queue Number:</strong> 1</p>
         <div id="upiPaymentButton" class="mt-4"></div>
         <p id="printStatus" class="text-xl text-blue-800 font-semibold mt-4"></p>
+
+      </div>
+
     </div>
+  </form>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
 
-    <script>
-        let a;
-        const socket = io("https://automated-printing.onrender.com");
-        const urlParams = new URLSearchParams(window.location.search);
-        const isClient = urlParams.get("mode") === "client";
+  <!-- Scripts -->
+  <script>
+  function showUploadStatus(e) {
+      e.preventDefault();
+      const status = document.getElementById("uploadStatus");
+      status.innerHTML = `<div class="text-info d-flex justify-content-center align-items-center">
+        <div class="spinner-border text-info" role="status"></div>
+        <span class="ms-2">Uploading...</span>
+      </div>`;
 
-        // Client-side page initialization
-        if (isClient) {
-            document.getElementById("clientPage").classList.remove("hidden");
-
-            // socket.on("printerInfo", (printers) => {
-            //     const printerSelect = document.getElementById("printerSelect");
-            //     printerSelect.innerHTML = printers.map(p => `<option value="${p.name}">${p.name}</option>`).join("");
-            // });
-            // socket.emit("getPrinters");
-            
-            fetch('/get-printer')
-    .then(response => response.json())
-    .then(data => {
-        console.log("Fetched printers:", data.printers); // Debugging log
-        const printerSelect = document.getElementById("printerSelect");
-        printerSelect.innerHTML = data.printers.map(p => `<option value="${p}">${p}</option>`).join("\n");
-    })
-    .catch(error => console.error('Error fetching printers:', error));
-
-        } else {
-            // Merchant page initialization
-            document.getElementById("merchantPage").classList.remove("hidden");
-            socket.emit("registerMerchant");
-            a ;
-            fetch("https://automated-printing.onrender.com/generateQR")
-                .then(res => res.json())
-                .then(data => {
-                    document.getElementById("qrCode").innerHTML = `<img src="${data.qrCode}" alt="Scan QR Code" class="w-64 h-64 mx-auto" />`;
-                });
-                socket.on("printInitiated", async (queueNumber) => {
-    try {
-        const res = await fetch(`https://automated-printing.onrender.com/get-request?queueNumber=${queueNumber}`);
-        if (!res.ok) throw new Error("Request not found");
-
-        const printRequest = await res.json();
-        console.log("✅ printRequest:", printRequest);
-
-        if (!Array.isArray(printRequest.files)) {
-            throw new Error("printRequest.files is not an array");
-        }
-
-        for (const file of printRequest.files) {
-            const response = await fetch("http://localhost:3001/download-and-print", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    downloadLink: file.filePath,
-                    printer: printRequest.printerSettings.printer,
-                    colorMode: printRequest.printerSettings.colorMode,
-                    copies: printRequest.printerSettings.copies,
-                    queueNumber,
-                }),
-            });
-
-            const result = await response.json();
-            if (!result.success) {
-                alert(`❌ Failed to print: ${file.originalName}`);
-                return;
-            }
-        }
-
-        socket.emit("printCompleted", queueNumber);
-
-    } catch (err) {
-        console.error("❌ Error during printing:", err.message);
+      setTimeout(() => {
+        status.innerHTML = 
+         ` <div class="text-success text-center fadeIn">
+            <div>✅ Upload complete!</div>
+      <img src="/path/to/generated-qr.png" id="payQrcode" alt="QR Code" class="my-3" style="width: 120px;" />
+             <p id="Filename">new.pdf</p>
+            <p id="EstimatedCost"><strong>Estimated Cost:</strong> ₹15</p>
+            <p id="queueNumber"><strong>Queue Number:</strong> 1</p>
+            <a href="upi://pay?pa=merchant@upi&pn=PrintShop&am=15" 
+               class="btn btn-success d-block d-sm-none mt-2" style="border-radius: 9999px;">
+              📱 Pay Now
+            </a>
+          </div>;`
+      }, 2000);
     }
+    function toggleTheme() {
+      document.body.classList.toggle("light-theme");
+      const icon = document.getElementById("themeIcon");
+      icon.textContent = document.body.classList.contains("light-theme") ? "☀️" : "🌙";
+    }
+
+ 
+ 
+
+   
+  </script>
+  
+  <script>
+    let a;
+    const socket = io("https://automated-printing.onrender.com");
+    const urlParams = new URLSearchParams(window.location.search);
+    const isClient = urlParams.get("mode") === "client";
+
+    // Client-side page initialization
+    if (isClient) {
+      document.getElementById("clientPage").classList.remove("d-none");
+
+        // socket.on("printerInfo", (printers) => {
+        //     const printerSelect = document.getElementById("printerSelect");
+        //     printerSelect.innerHTML = printers.map(p => `<option value="${p.name}">${p.name}</option>`).join("");
+        // });
+        // socket.emit("getPrinters");
+        
+        fetch('/get-printer')
+.then(response => response.json())
+.then(data => {
+    console.log("Fetched printers:", data.printers); // Debugging log
+    const printerSelect = document.getElementById("printerSelect");
+    printerSelect.innerHTML = data.printers.map(p => `<option value="${p}">${p}</option>`).join("\n");
+})
+.catch(error => console.error('Error fetching printers:', error));
+
+    } else {
+        // Merchant page initialization
+        document.getElementById("merchantPage").classList.remove("d-none");
+        socket.emit("registerMerchant");
+        a ;
+        fetch("https://automated-printing.onrender.com/generateQR")
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById("qrCode").innerHTML = `<img src="${data.qrCode}" alt="Scan QR Code" class="w-64 h-64 mx-auto" />`;
+            });
+            socket.on("printInitiated", async (queueNumber) => {
+try {
+    const res = await fetch(`https://automated-printing.onrender.com/get-request?queueNumber=${queueNumber}`);
+    if (!res.ok) throw new Error("Request not found");
+
+    const printRequest = await res.json();
+    console.log("✅ printRequest:", printRequest);
+
+    if (!Array.isArray(printRequest.files)) {
+        throw new Error("printRequest.files is not an array");
+    }
+
+    for (const file of printRequest.files) {
+        const response = await fetch("http://localhost:3001/download-and-print", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                downloadLink: file.filePath,
+                printer: printRequest.printerSettings.printer,
+                colorMode: printRequest.printerSettings.colorMode,
+                copies: printRequest.printerSettings.copies,
+                queueNumber,
+            }),
+        });
+
+        const result = await response.json();
+        if (!result.success) {
+            alert(`❌ Failed to print: ${file.originalName}`);
+            return;
+        }
+    }
+
+    socket.emit("printCompleted", queueNumber);
+
+} catch (err) {
+    console.error("❌ Error during printing:", err.message);
+}
 });
 
 
-                socket.on("updateQueue", (queue) => {
-    const queueDiv = document.getElementById("printRequests");
-    queueDiv.innerHTML = ""; // Clear previous content
+            socket.on("updateQueue", (queue) => {
+const queueDiv = document.getElementById("printRequests");
+queueDiv.innerHTML = ""; // Clear previous content
 
-    queue.forEach(request => {
-        const div = document.createElement("div");
-        div.classList.add("p-4", "border-2", "border-gray-300", "rounded-lg", "mb-4", "bg-gray-100", "shadow-md");
-        div.innerHTML = `
-            <h2 class="text-xl font-medium mb-4">Print Request</h2>
-            <p><b>Queue Number:</b> ${request.queueNumber}</p>
-            <p><b>Printer Settings:</b> Printer: ${request.printerSettings.printer}, Mode: ${request.printerSettings.colorMode}, Copies: ${request.printerSettings.copies}</p>
-            <p><b>Cost:</b> ₹${request.totalCost}</p>
-            <div class="my-4 text-center"><img src="${request.upiQrCode}" class="w-64 h-64 mx-auto" /></div>
-            <div class="my-4">${request.files.map(file => `<a href="${file.filePath}" target="_blank" class="text-blue-500">${file.originalName}</a><br>`).join("")}</div>
-            ${!request.paymentConfirmed ? `<button class="bg-green-500 text-white p-2 rounded" onclick="confirmPayment(${request.queueNumber})">Confirm Payment</button>` : ""}
-            <button id="printButton-${request.queueNumber}" 
-                class="${request.paymentConfirmed ? 'bg-blue-500' : 'bg-gray-500'} text-white p-2 rounded ml-2" 
-                onclick="printFiles(${request.queueNumber})" 
-                ${request.paymentConfirmed ? '' : 'disabled'}>
-                Print
-            </button>
-             <hr class="my-4">
-        `;
-        queueDiv.appendChild(div);
-        console.log(request.queueNumber);
-        
-    });
+queue.forEach(request => {
+    const div = document.createElement("div");
+    div.classList.add("p-4", "border-2", "border-gray-300", "rounded-lg", "mb-4", "bg-gray-100", "shadow-md");
+    div.innerHTML = `
+          <div id="printRequests" class="mt-5"> 
+      <div class="glass-card mb-4" id="merchantRequestCard">
+        <h5 class="text-lg font-medium mb-3" id="printRequestTitle">
+          Print Request
+           <div id="queueNumber"><b>Queue Number:</b> ${request.queueNumber}</div>
+           <div id="Filename">new.pdf</div>
+        </h5>
+        <p><strong>Printer:</strong> <span id="merchantPrinter">${request.printerSettings.printer}</span></p>
+        <p><strong>Mode:</strong> <span id="merchantMode">${request.printerSettings.colorMode}</span> | 
+           <strong>Copies:</strong> <span id="merchantCopies"> ${request.printerSettings.copies}</span></p>
+        <p><strong>Cost:</strong> ₹<span id="merchantCost">${request.totalCost}</span></p>
+         <div class="my-4 text-center"><img src="${request.upiQrCode}" id="merchantQR" class="bg-white rounded mt-3 p-1" style="width: 80px;" /></div> 
+        <div class="d-flex gap-3 mt-4">
+          <button class="btn btn-outline-light w-50" id="confirmButton" onclick="confirmPayment(${request.queueNumber})">Confirm</button>
+          <button class="glow-button w-50" id="printButton-${request.queueNumber}" class="${request.paymentConfirmed ? 'bg-blue-500' : 'bg-gray-500'} text-white p-2 rounded ml-2"  onclick="printFiles(${request.queueNumber})" ${request.paymentConfirmed ? '' : 'disabled'}>Print</button>
+        </div>
+      </div>
+      </div>
+         <hr class="my-4">
+    `;
+    queueDiv.appendChild(div);
+    console.log(request.queueNumber);
     
+});
+
 }); 
 
-        }
-        function removeRequest(queueNumber) {
-    socket.emit("removeRequest", queueNumber);
+    }
+    function removeRequest(queueNumber) {
+socket.emit("removeRequest", queueNumber);
 }
 
-        // Client file upload handler
-        function uploadFiles() {
-            const files = document.getElementById("fileInput").files;
-            const printerName = document.getElementById("printerSelect").value;
-            const colorMode = document.getElementById("colorMode").value;
-            const copies = document.getElementById("copies").value;
+    // Client file upload handler
+    function uploadFiles() {
+        const files = document.getElementById("fileInput").files;
+        const printerName = document.getElementById("printerSelect").value;
+        const colorMode = document.getElementById("colorMode").value;
+        const copies = document.getElementById("copies").value;
 
-            if (files.length === 0) {
-                alert("Please select files.");
-                return;
-            }
+        if (files.length === 0) {
+            alert("Please select files.");
+            return;
+        }
 
-            const formData = new FormData();
-            for (let file of files) {
-                formData.append("files", file);
-            }
-            formData.append("printer", printerName);
-            formData.append("colorMode", colorMode);
-            formData.append("copies", copies);
+        const formData = new FormData();
+        for (let file of files) {
+            formData.append("files", file);
+        }
+        formData.append("printer", printerName);
+        formData.append("colorMode", colorMode);
+        formData.append("copies", copies);
 
-            fetch("https://automated-printing.onrender.com/upload", {
-    method: "POST",
-    body: formData
+        fetch("https://automated-printing.onrender.com/upload", {
+method: "POST",
+body: formData
 })
 .then(res => res.json())
 .then(data => {
-    console.log("Upload Response:", data); // Debugging line
-    if (!data.request || !data.request.files) {
-        throw new Error("Invalid response from server. Missing 'files' property.");
-    }
+console.log("Upload Response:", data); // Debugging line
+if (!data.request || !data.request.files) {
+    throw new Error("Invalid response from server. Missing 'files' property.");
+}
 
-    document.getElementById("clientQrCode").innerHTML = 
-        `<img src="${data.request.upiQrCode}" alt="Payment QR Code" class="w-64 h-64 mx-auto" />`;
+document.getElementById("clientQrCode").innerHTML = 
+    `<img src="${data.request.upiQrCode}" alt="Payment QR Code" class="w-64 h-64 mx-auto" />`;
 
-    document.getElementById("clientPrintCost").innerText = data.request.totalCost;
-    document.getElementById("queueNumberClient").innerText = data.request.queueNumber;  
+document.getElementById("clientPrintCost").innerText = data.request.totalCost;
+document.getElementById("queueNumberClient").innerText = data.request.queueNumber;  
 // Add UPI payment URL button
 document.getElementById("upiPaymentButton").innerHTML = 
-            `<a href="${data.request.upiUrl}" class="bg-green-500 text-white p-2 rounded block text-center mt-3" target="_blank">📱 Pay Now</a>`;
-    alert("Files sent to merchant! Please scan the QR code to pay.");
+        `<a href="${data.request.upiUrl}" class="bg-green-500 text-white p-2 rounded block text-center mt-3" target="_blank">📱 Pay Now</a>`;
+alert("Files sent to merchant! Please scan the QR code to pay.");
 })
 .catch(err => {
-    console.error("Upload error:", err);
-    alert("Error uploading files. Please try again.");
+console.error("Upload error:", err);
+alert("Error uploading files. Please try again.");
 });
 
 
-        }
+    }
 
-        // Merchant payment confirmation handler
-        function confirmPayment(queueNumber) {
-    socket.emit("confirmPayment", queueNumber);
-    alert("Payment confirmed!");
+    // Merchant payment confirmation handler
+    function confirmPayment(queueNumber) {
+socket.emit("confirmPayment", queueNumber);
+alert("Payment confirmed!");
 }
 
 function saveMerchantDetails() {
-    const shopName = document.getElementById("merchant-name").value;
-    const upiId = document.getElementById("merchant-upi").value;
+const shopName = document.getElementById("merchant-name").value;
+const upiId = document.getElementById("merchant-upi").value;
 
-    if (!shopName || !upiId) {
-        alert("Please enter both Shop Name and UPI ID");
-        return;
-    }
-
-    // Save merchant details to the backend
-    fetch("https://automated-printing.onrender.com/saveMerchant", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ shopName, upiId })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert("Merchant details saved!");
-        } else {
-            alert("Error saving details.");
-        }
-    })
-    .catch(error => console.error("Error:", error));
+if (!shopName || !upiId) {
+  alert("✅ Merchant profile saved successfully!");
+  return;
 }
 
-        // Print files handler
-        function printFiles(queueNumber) {
-            console.log(4);
-            
-    fetch("https://automated-printing.onrender.com/print", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            queueNumber: queueNumber
-        })
+// Save merchant details to the backend
+fetch("https://automated-printing.onrender.com/saveMerchant", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ shopName, upiId })
+})
+.then(response => response.json())
+.then(data => {
+    if (data.success) {
+        alert("Merchant details saved!");
+    } else {
+        alert("Error saving details.");
+    }
+})
+.catch(error => console.error("Error:", error));
+}
+
+    // Print files handler
+    function printFiles(queueNumber) {
+        console.log(4);
+        
+fetch("https://automated-printing.onrender.com/print", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+        queueNumber: queueNumber
     })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            alert("Print job initiated!");
-            // socket.emit("removeRequest", queueNumber); // Automatically remove after printing
-        } else {
-            alert("Error printing files: " + data.error);
-        }
-    })
-    .catch(err => console.error("Print error:", err));
-    console.log(34);
+})
+.then(res => res.json())
+.then(data => {
+    if (data.success) {
+        alert("Print job initiated!");
+        // socket.emit("removeRequest", queueNumber); // Automatically remove after printing
+    } else {
+        alert("Error printing files: " + data.error);
+    }
+})
+.catch(err => console.error("Print error:", err));
+console.log(34);
 
 
 }
 
 socket.on("printingStarted", (queueNumber) => {
-    document.getElementById("printStatus").innerText = `Your print is ready! Please collect it with Queue Number: ${queueNumber}`;
+document.getElementById("printStatus").innerText = `Your print is ready! Please collect it with Queue Number: ${queueNumber}`;
 
-    // Remove QR code and payment button
-    document.getElementById("clientPrintCost").parentElement.innerHTML = "";
-    document.getElementById("queueNumberClient").parentElement.innerHTML = "";
-    document.getElementById("clientQrCode").innerHTML = "";
-    document.getElementById("upiPaymentButton").innerHTML = "";});
+// Remove QR code and payment button
+document.getElementById("clientPrintCost").parentElement.innerHTML = "";
+document.getElementById("queueNumberClient").parentElement.innerHTML = "";
+document.getElementById("clientQrCode").innerHTML = "";
+document.getElementById("upiPaymentButton").innerHTML = "";});
 
 
-  
 
-    </script>
+
+</script>
 </body>
-
 </html>
