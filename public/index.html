@@ -305,13 +305,13 @@ body.light-theme .offcanvas.offcanvas-start {
     <div class="offcanvas-body">
       <div class="mb-3">
         <label class="form-label" for="merchant-name">Shop Name</label>
-        <input type="text"  id="merchant-name" class="form-control" placeholder="Enter shop name" />
+        <input type="text"  id="merchant-name" class="form-control" placeholder="Enter shop name"  required/>
       </div>
       <div class="mb-3">
         <label class="form-label" for="merchant-upi">UPI ID</label>
-        <input type="text" id="merchant-upi" class="form-control" placeholder="Enter UPI ID" />
+        <input type="text" id="merchant-upi" class="form-control" placeholder="Enter UPI ID" required/>
       </div>
-      <button class="glow-button btn-success w-70 mx-auto" onclick="saveMerchantDetails()">Save</button>
+      <button class="glow-button btn-success w-70 mx-auto" onclick="saveMerchantDetails()" data-bs-dismiss="offcanvas">Save</button>
     </div>
   </div>
 
@@ -325,22 +325,7 @@ body.light-theme .offcanvas.offcanvas-start {
         <p class="text-opacity-70">Scan this QR to upload files directly</p>
       </div>      
         <div id="printRequests" class="mt-5"> 
-      <div class="glass-card mb-4" id="merchantRequestCard">
-        <h5 class="text-lg font-medium mb-3" id="printRequestTitle">
-          Print Request
-           <div id="queueNumber">#101</div>
-           <div id="Filename">new.pdf</div>
-        </h5>
-        <p><strong>Printer:</strong> <span id="merchantPrinter">HP LaserJet</span></p>
-        <p><strong>Mode:</strong> <span id="merchantMode">Black & White</span> | 
-           <strong>Copies:</strong> <span id="merchantCopies">2</span></p>
-        <p><strong>Cost:</strong> ₹<span id="merchantCost">10</span></p>
-        <img src="" id="merchantQR" class="bg-white rounded mt-3 p-1" style="width: 80px;" />
-        <div class="d-flex gap-3 mt-4">
-          <button class="btn btn-outline-light w-50" id="confirmButton">Confirm</button>
-          <button class="glow-button w-50" id="printButton">Print</button>
-        </div>
-      </div>
+     
       </div>
     </div>
   </div>
@@ -477,7 +462,7 @@ queueDiv.innerHTML = ""; // Clear previous content
 
 queue.forEach(request => {
     const div = document.createElement("div");
-    div.classList.add("p-4",  "rounded-lg", "mb-4",   "shadow-md");
+    div.classList.add("p-4",  "rounded-lg", "mb-4", "glass-card", "mb-4"  ,"shadow-md");
     div.innerHTML = `
           <div id="printRequests" class="mt-5"> 
       <div class="glass-card mb-4" id="merchantRequestCard">
@@ -490,7 +475,8 @@ queue.forEach(request => {
         <p><strong>Mode:</strong> <span id="merchantMode">${request.printerSettings.colorMode}</span> | 
            <strong>Copies:</strong> <span id="merchantCopies"> ${request.printerSettings.copies}</span></p>
         <p><strong>Cost:</strong> ₹<span id="merchantCost">${request.totalCost}</span></p>
-         <div class="my-4 text-center"><img src="${request.upiQrCode}" id="merchantQR" class="bg-white rounded mt-3 p-1" style="width: 80px;" /></div> 
+         <div class="my-4 text-center"><img src="${request.upiQrCode}" id="merchantQR" class="bg-white rounded m-auto w-3xs
+ p-1"  /></div> 
         <div class="d-flex gap-3 mt-4">
           <button class="btn btn-outline-light w-50" id="confirmButton" onclick="confirmPayment(${request.queueNumber})">Confirm</button>
           <button class="glow-button w-50" id="printButton-${request.queueNumber}" class="${request.paymentConfirmed ? 'bg-blue-500' : 'bg-gray-500'} text-white p-2 rounded ml-2"  onclick="printFiles(${request.queueNumber})" ${request.paymentConfirmed ? '' : 'disabled'}>Print</button>
@@ -628,8 +614,9 @@ console.log(34);
 socket.on("printingStarted", (queueNumber) => {
     console.log("completed ",queueNumber);
     
-document.getElementById("printStatus").innerText = `Your print is ready! Please collect it with Queue Number: ${queueNumber}`;
- 
+document.getElementById("uploadStatus").innerText = `<p class="text-success text-center fadeIn"><strong>Your print is ready! Please collect it with Queue Number: </strong> ${queueNumber} </p>
+`;
+  
 });
 
 
