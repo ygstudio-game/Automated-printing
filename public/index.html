@@ -357,7 +357,6 @@ body.light-theme .offcanvas.offcanvas-start {
       <div class="glass-card">
         <h2 class="section-title text-center">Upload Files to Print</h2>
      <!-- Customer Upload Form -->
-<form  >
     <div class="mb-3">
         <input type="file" id="fileInput" class="form-control" multiple accept=".pdf,.jpg" required   />
       </div>
@@ -392,7 +391,6 @@ body.light-theme .offcanvas.offcanvas-start {
       </div>
 
     </div>
-  </form>
       </div>
     </div>
   </div>
@@ -552,31 +550,31 @@ socket.emit("removeRequest", queueNumber);
         formData.append("copies", copies);
         console.log(formData);
         
-//         fetch("https://automated-printing.onrender.com/upload", {
-// method: "POST",
-// body: formData
-// })
-// .then(res => res.json())
-// .then(data => {
-// console.log("Upload Response:", data); // Debugging line
-// if (!data.request || !data.request.files) {
-//     throw new Error("Invalid response from server. Missing 'files' property.");
-// }
+        fetch("https://automated-printing.onrender.com/upload", {
+method: "POST",
+body: formData
+})
+.then(res => res.json())
+.then(data => {
+console.log("Upload Response:", data); // Debugging line
+if (!data.request || !data.request.files) {
+    throw new Error("Invalid response from server. Missing 'files' property.");
+}
 
-// document.getElementById("clientQrCode").innerHTML = 
-//     `<img src="${data.request.upiQrCode}" alt="Payment QR Code" class="w-64 h-64 mx-auto" />`;
+document.getElementById("clientQrCode").innerHTML = 
+    `<img src="${data.request.upiQrCode}" alt="Payment QR Code" class="w-64 h-64 mx-auto" />`;
 
-// document.getElementById("clientPrintCost").innerText = data.request.totalCost;
-// document.getElementById("queueNumberClient").innerText = data.request.queueNumber;  
-// // Add UPI payment URL button
-// document.getElementById("upiPaymentButton").innerHTML = 
-//         `<a href="${data.request.upiUrl}" class="bg-green-500 text-white p-2 rounded block text-center mt-3" target="_blank">📱 Pay Now</a>`;
-// alert("Files sent to merchant! Please scan the QR code to pay.");
-// })
-// .catch(err => {
-// console.error("Upload error:", err);
-// alert("Error uploading files. Please try again.");
-// });
+document.getElementById("clientPrintCost").innerText = data.request.totalCost;
+document.getElementById("queueNumberClient").innerText = data.request.queueNumber;  
+// Add UPI payment URL button
+document.getElementById("upiPaymentButton").innerHTML = 
+        `<a href="${data.request.upiUrl}" class="bg-green-500 text-white p-2 rounded block text-center mt-3" target="_blank">📱 Pay Now</a>`;
+alert("Files sent to merchant! Please scan the QR code to pay.");
+})
+.catch(err => {
+console.error("Upload error:", err);
+alert("Error uploading files. Please try again.");
+});
 
 
     }
