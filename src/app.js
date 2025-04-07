@@ -67,6 +67,7 @@ app.post("/print-status", (req, res) => {
 io.on("connection", (socket) => {
     console.log("Client connected:", socket.id);
     socket.on("printCompleted", (queueNumber,socketId) => {
+        console.log(socketId)
         printQueue = printQueue.filter(req => req.queueNumber !== queueNumber);
         io.emit("updateQueue", printQueue); // Update all connected clients
     io.emit("printingStarted", queueNumber,socketId);
