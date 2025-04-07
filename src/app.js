@@ -51,8 +51,15 @@ app.post("/print-status", (req, res) => {
   
     if (status === "printCompleted") {
       console.log(`✅ Print completed for queue #${queueNumber}`);
-      io.emit("printCompleted", { queueNumber }); // ✅ this will work!
-    }
+      const request = printQueue.find(req => req.queueNumber === queueNumber);
+
+      if (request && request.socketId) {
+          io.to(request.socketId).emit("printCompleted", { queueNumber });
+          console.log(`✅ Notified user ${request.socketId} about completion of queue #${queueNumber}`);
+      } else {
+          console.warn(`⚠️ Could not find socketId for queue #${queueNumber}`);
+      }
+          }
   
     res.sendStatus(200);
   });
@@ -132,6 +139,7 @@ app.post("/upload", upload.array("files"), async (req, res) => {
     const perPageCost = { color: 5, grayscale: 2 };
     const colorMode = req.body.colorMode;
     const copies = parseInt(req.body.copies) || 1;
+    const socketId = req.headers["x-socket-id"];
 
     let totalCost = 0;
     let uploadedFiles = [];
@@ -167,6 +175,7 @@ app.post("/upload", upload.array("files"), async (req, res) => {
     const newRequest = {
         queueNumber,
         files: uploadedFiles,
+        socketId,
         printerSettings: {
             printer: req.body.printer,
             colorMode: req.body.colorMode,

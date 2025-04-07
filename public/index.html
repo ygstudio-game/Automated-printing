@@ -566,7 +566,10 @@ socket.emit("removeRequest", queueNumber);
         
         fetch("https://automated-printing.onrender.com/upload", {
 method: "POST",
-body: formData
+body: formData,
+headers: {
+        "x-socket-id": socket.id // Pass the socket ID to the backend
+    }
 })
 .then(res => res.json())
 .then(data => {
