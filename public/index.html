@@ -18,12 +18,12 @@
   opacity: 1;
 }
 body.light-theme ::placeholder {
-  color: rgba(31, 41, 55, 0.5);
+  color: rgba(0, 0, 0, 0.664) !important;
 }
 
 
 body.light-theme{
-  background: radial-gradient(at 49% 26%, #f8d3e4 0px, transparent 50%), radial-gradient(at 54% 4%, #d5a97e 0px, #00000000 50%), radial-gradient(at 59% 91%, #f0a07b 0px, transparent 50%), radial-gradient(at 8% 23%, #9f7373 0px, transparent 50%), #798eaa
+  background:  radial-gradient(at 49% 26%, #f8d3e4 0px, transparent 50%),  radial-gradient(at 59% 91%, #f0a07b 0px, transparent 50%),  #798eaa;
         }
 
 input.form-control:focus,
@@ -351,12 +351,14 @@ body {
     <div  >
       <div class="glass-card text-center mb-5 hero-qr">
         <h2 class="section-title">Merchant Dashboard</h2>
-        <div id="qrCode"  src=" " alt="Generating Code"></div> 
-        <p class="text-opacity-70">Scan this QR to upload files directly</p>
-      <div class="input-group mb-4" style="max-width: 300px;">
+        <div id="qrCode" class="mb-2"  src=" " alt="Generating Code"></div> 
+        <p class="text-opacity-70 mt-4">Scan this QR to upload files directly</p>
+      <div class="input-group mt-4" style="max-width: 300px;">
         <input type="number" class="form-control" id="searchQueue" placeholder="Enter Queue Number">
         <button class="btn btn-primary" onclick="scrollToQueue(document.getElementById('searchQueue').value)">Go</button>
-      </div>   </div>   
+      </div>   
+    
+    </div>   
         <div id="printRequests" class="mt-5"> 
      
       </div>
