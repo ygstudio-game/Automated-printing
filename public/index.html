@@ -674,9 +674,8 @@ function scrollToQueue(queueNumber) {
   }
 }
 function removeQueue(queueNumber) {
-  if (confirm(`Remove queue #${queueNumber}?`)) {
-    socket.emit("removeQueue", queueNumber);
-  }
+    socket.emit("removeRequest", queueNumber);
+
 }
 
 
