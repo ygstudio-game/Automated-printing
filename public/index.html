@@ -500,6 +500,8 @@ queueDiv.innerHTML = ""; // Clear previous content
 
 queue.forEach(request => {
     const div = document.createElement("div");
+    console.log(request);
+    
     div.classList.add("p-4",  "rounded-lg", "mb-4", "glass-card", "mb-4"  ,"shadow-md");
     div.innerHTML = `
           <div id="printRequests" class="mt-5"> 
@@ -511,7 +513,7 @@ queue.forEach(request => {
         <h5 class="text-lg font-medium mb-3" id="printRequestTitle">
           Print Request
            <div id="queueNumber"><b>Queue Number:</b> ${request.queueNumber}</div>
-           <div id="Filename">${data.request.files[0].originalName}</div>
+           <div id="Filename"> </div>
         </h5>
         <p><strong>Printer:</strong> <span id="merchantPrinter">${request.printerSettings.printer}</span></p>
         <p><strong>Mode:</strong> <span id="merchantMode">${request.printerSettings.colorMode}</span> | 
