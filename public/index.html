@@ -305,7 +305,7 @@ body {
   font-family: 'Fira Code', monospace;
 }
 
-#merchantRequestCard h5 {
+.merchantRequestCard h5 {
   font-family: 'Playfair Display', serif;
 }
 #queueNumber{
@@ -353,11 +353,10 @@ body {
         <h2 class="section-title">Merchant Dashboard</h2>
         <div id="qrCode"  src=" " alt="Generating Code"></div> 
         <p class="text-opacity-70">Scan this QR to upload files directly</p>
-      </div>    
       <div class="input-group mb-4" style="max-width: 300px;">
         <input type="number" class="form-control" id="searchQueue" placeholder="Enter Queue Number">
         <button class="btn btn-primary" onclick="scrollToQueue(document.getElementById('searchQueue').value)">Go</button>
-      </div>  
+      </div>   </div>   
         <div id="printRequests" class="mt-5"> 
      
       </div>
@@ -501,7 +500,7 @@ queue.forEach(request => {
     div.classList.add("p-4",  "rounded-lg", "mb-4", "glass-card", "mb-4"  ,"shadow-md");
     div.innerHTML = `
           <div id="printRequests" class="mt-5"> 
-      <div class="glass-card mb-4" id="merchantRequestCard">
+      <div class="glass-card mb-4 merchantRequestCard" id="merchantRequestCard-${request.queueNumber}">
           <button class="btn btn-sm btn-outline-danger position-absolute top-0 end-0 m-2"
           title="Remove this request"
           onclick="removeQueue(${request.queueNumber})">✖</button>
@@ -664,7 +663,7 @@ document.getElementById("uploadStatus").innerHTML = `<p class="text-success text
   
 });
 function scrollToQueue(queueNumber) {
-  const el = document.getElementById(`queue-${queueNumber}`);
+  const el = document.getElementById(`merchantRequestCard-${queueNumber}`);
   if (el) {
     el.scrollIntoView({ behavior: "smooth", block: "center" });
     el.classList.add("border", "border-info", "shadow");
@@ -674,8 +673,9 @@ function scrollToQueue(queueNumber) {
   }
 }
 function removeQueue(queueNumber) {
+  if (confirm(`Remove Queue #${queueNumber}?`)) {
     socket.emit("removeRequest", queueNumber);
-
+}
 }
 
 
