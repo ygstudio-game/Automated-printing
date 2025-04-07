@@ -47,7 +47,7 @@ app.get("/", (req, res) => {
 });
  // In server.js or wherever your Express app is
 app.post("/print-status", (req, res) => {
-    const { queueNumber, status,socketId} = req.body;
+    const { queueNumber, status} = req.body;
     console.log("req body" ,req.body)
     socketId = req.body.socketId;
     console.log(socketId);
