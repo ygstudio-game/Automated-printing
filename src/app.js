@@ -48,7 +48,10 @@ app.get("/", (req, res) => {
  // In server.js or wherever your Express app is
 app.post("/print-status", (req, res) => {
     const { queueNumber, status,socketId} = req.body;
-    console.log(socketId)
+    console.log("req body" ,req.body)
+    socketId = req.body.socketId;
+    console.log(socketId);
+    
     if (status === "printCompleted") {
         const request = printQueue.find(req => req.queueNumber === queueNumber);
         
