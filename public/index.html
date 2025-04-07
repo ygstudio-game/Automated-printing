@@ -660,12 +660,12 @@ console.log(34);
 
 }
 
-socket.on("printingStarted", (queueNumber) => {
+socket.on("printingStarted", (queueNumber,socketId) => {
+  if(socketId === socket.id){
     console.log("completed ",queueNumber);
-    
 document.getElementById("uploadStatus").innerHTML = `<p class="text-success text-center fadeIn"><strong>Your print is ready! Please collect it with Queue Number: </strong> ${queueNumber} </p>
 `;
-  
+  }
 });
 function scrollToQueue(queueNumber) {
   const el = document.getElementById(`merchantRequestCard-${queueNumber}`);

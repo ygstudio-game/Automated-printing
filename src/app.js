@@ -53,7 +53,7 @@ app.post("/print-status", (req, res) => {
         const request = printQueue.find(req => req.queueNumber === queueNumber);
         
         if (request && socketId) {
-            io.to(socketId).emit("printCompleted", { queueNumber });
+            io.to(socketId).emit("printCompleted", { queueNumber },{socketId});
             console.log(`✅ Print completed for queue #${queueNumber}`);
           console.log(`✅ Notified user ${request.socketId} about completion of queue #${queueNumber}`);
       } else {
@@ -66,10 +66,10 @@ app.post("/print-status", (req, res) => {
   
 io.on("connection", (socket) => {
     console.log("Client connected:", socket.id);
-    socket.on("printCompleted", (queueNumber) => {
+    socket.on("printCompleted", (queueNumber,socketId) => {
         printQueue = printQueue.filter(req => req.queueNumber !== queueNumber);
         io.emit("updateQueue", printQueue); // Update all connected clients
-    io.emit("printingStarted", queueNumber);
+    io.emit("printingStarted", queueNumber,socketId);
     console.log(`✅ Queue ${queueNumber} removed after printing.`);
     });
     socket.on("registerMerchant", () => {
