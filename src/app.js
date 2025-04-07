@@ -47,14 +47,14 @@ app.get("/", (req, res) => {
 });
  // In server.js or wherever your Express app is
 app.post("/print-status", (req, res) => {
-    const { queueNumber, status } = req.body;
+    const { queueNumber, status,socketId} = req.body;
   
     if (status === "printCompleted") {
-      console.log(`✅ Print completed for queue #${queueNumber}`);
-      const request = printQueue.find(req => req.queueNumber === queueNumber);
-
-      if (request && request.socketId) {
-          io.to(request.socketId).emit("printCompleted", { queueNumber });
+        const request = printQueue.find(req => req.queueNumber === queueNumber);
+        
+        if (request && request.socketId) {
+            io.to(socketId).emit("printCompleted", { queueNumber });
+            console.log(`✅ Print completed for queue #${queueNumber}`);
           console.log(`✅ Notified user ${request.socketId} about completion of queue #${queueNumber}`);
       } else {
           console.warn(`⚠️ Could not find socketId for queue #${queueNumber}`);
