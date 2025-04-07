@@ -19,6 +19,17 @@
 body.light-theme ::placeholder {
   color: rgba(31, 41, 55, 0.5);
 }
+
+
+body.light-theme{
+  background: 
+        radial-gradient(at 49% 26%, #ffc9e2 0px, transparent 50%), 
+        radial-gradient(at 54% 4%, #f4cca4 0px, transparent 50%), 
+        radial-gradient(at 59% 91%, #f0a07b 0px, transparent 50%), 
+        radial-gradient(at 8% 23%, #dddada 0px, transparent 50%), 
+         #1576f5;
+        }
+
 input.form-control:focus,
 select.form-select:focus {
   border-color: #f4cca4;
@@ -288,8 +299,8 @@ body.light-theme .offcanvas.offcanvas-start {
   <!-- Navbar -->
   <nav class="navbar navbar-dark offcanvas-start  bg-dark px-4 d-flex justify-content-between">
     <div class="d-flex align-items-center gap-3">
-      <button class="btn btn-outline-light" data-bs-toggle="offcanvas" data-bs-target="#sidebar">☰</button>
-      <h1 class="text-white m-0 fs-5 fs-sm-4 fs-md-3 fs-lg-2">Print Dashboard</h1>
+      <button class="btn btn-outline-light" id="siderbarTogglebtn" data-bs-toggle="offcanvas" data-bs-target="#sidebar">☰</button>
+      <h1 class="text-white m-0 fs-5 fs-sm-4 fs-md-3 fs-lg-2">Automated-Printing</h1>
     </div>
     <div class="theme-toggle" onclick="toggleTheme()">
       <span id="themeIcon">🌙</span>
@@ -390,7 +401,7 @@ body.light-theme .offcanvas.offcanvas-start {
     // Client-side page initialization
     if (isClient) {
       document.getElementById("clientPage").classList.remove("d-none");
-
+      document.getElementById("siderbarTogglebtn").classList.add("d-none");
         // socket.on("printerInfo", (printers) => {
         //     const printerSelect = document.getElementById("printerSelect");
         //     printerSelect.innerHTML = printers.map(p => `<option value="${p.name}">${p.name}</option>`).join("");
