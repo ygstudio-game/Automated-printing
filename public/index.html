@@ -656,18 +656,12 @@ fetch("https://automated-printing.onrender.com/print", {
     }
 })
 .catch(err => console.error("Print error:", err));
-console.log(34);
-
-
 }
 
 socket.on("printCompleted", ({ queueNumber, socketId }) => {
-  console.log(socketId);
-  console.log(socket.id);
-  
   if(socketId === socket.id){
     console.log("completed ",queueNumber);
-document.getElementById("uploadStatus").innerHTML = `<p class="text-success text-center fadeIn"><strong>Your print is ready! Please collect it with Queue Number: </strong> ${queueNumber} </p>
+document.getElementById("uploadStatus").innerHTML = `<p class="text-[#91d22e] text-center fadeIn"><strong>Your print is ready! Please collect it with Queue Number: </strong> ${queueNumber} </p>
 `;
   }
 });
