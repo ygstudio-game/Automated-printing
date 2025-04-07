@@ -10,6 +10,7 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600&family=Playfair+Display:wght@500;700&family=Fira+Code&display=swap" rel="stylesheet">
 
   <style>
 ::placeholder {
@@ -22,12 +23,7 @@ body.light-theme ::placeholder {
 
 
 body.light-theme{
-  background: 
-        radial-gradient(at 49% 26%, #ffc9e2 0px, transparent 50%), 
-        radial-gradient(at 54% 4%, #f4cca4 0px, transparent 50%), 
-        radial-gradient(at 59% 91%, #f0a07b 0px, transparent 50%), 
-        radial-gradient(at 8% 23%, #dddada 0px, transparent 50%), 
-         #1576f5;
+  background: radial-gradient(at 49% 26%, #f8d3e4 0px, transparent 50%), radial-gradient(at 54% 4%, #d5a97e 0px, #00000000 50%), radial-gradient(at 59% 91%, #f0a07b 0px, transparent 50%), radial-gradient(at 8% 23%, #9f7373 0px, transparent 50%), #798eaa
         }
 
 input.form-control:focus,
@@ -291,6 +287,27 @@ body.light-theme .offcanvas.offcanvas-start {
   border-bottom: 1px solid rgba(255, 255, 255, 0.15);
 }
  
+body {
+  font-family: 'Poppins', sans-serif;
+}
+
+.section-title {
+  font-family: 'Raleway', sans-serif;
+}
+
+.glow-button {
+  font-family: 'Raleway', sans-serif;
+}
+
+#queueNumber,
+#merchantMode,
+#merchantCost {
+  font-family: 'Fira Code', monospace;
+}
+
+#merchantRequestCard h5 {
+  font-family: 'Playfair Display', serif;
+}
 
   </style>
 </head>
@@ -509,11 +526,12 @@ socket.emit("removeRequest", queueNumber);
     // Client file upload handler
     function uploadFiles() {
         const status = document.getElementById("uploadStatus");
+        const uploadPrintBtn = document.getElementById("uploadPrintButton");
       status.innerHTML = `<div class="text-info d-flex justify-content-center align-items-center">
         <div class="spinner-border text-info" role="status"></div>
         <span class="ms-2">Uploading...</span>
       </div>`;
- 
+       uploadPrintBtn.classList.add("d-none");
 
         const files = document.getElementById("fileInput").files;
         const printerName = document.getElementById("printerSelect").value;
@@ -542,6 +560,8 @@ body: formData
 console.log("Upload Response:", data); // Debugging line
 if (!data.request || !data.request.files) {
     throw new Error("Invalid response from server. Missing 'files' property.");
+    uploadPrintBtn.classList.remove("d-none");
+    status.innerHTML = ``;
 }
 
 status.innerHTML = `<div class="text-[#50d71e]text-center fadeIn">
@@ -558,6 +578,9 @@ status.innerHTML = `<div class="text-[#50d71e]text-center fadeIn">
 .catch(err => {
 console.error("Upload error:", err);
 alert("Error uploading files. Please try again.");
+uploadPrintBtn.classList.remove("d-none");
+status.innerHTML = ``;
+
 });
 
 
