@@ -661,7 +661,10 @@ console.log(34);
 
 }
 
-socket.on("printingStarted", (queueNumber,socketId) => {
+socket.on("printingStarted", (req) => {
+  queueNumber =req.queueNumber
+  socketId =req.socketId
+  console.log(req);
   console.log(socketId);
   console.log(socket.id);
   

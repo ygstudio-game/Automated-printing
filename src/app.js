@@ -56,7 +56,7 @@ app.post("/print-status", (req, res) => {
         const request = printQueue.find(req => req.queueNumber === queueNumber);
         
         if (request && socketId) {
-            io.to(socketId).emit("printCompleted", { queueNumber },{socketId});
+            io.to(socketId).emit("printCompleted", { queueNumber ,socketId});
             console.log(`✅ Print completed for queue #${queueNumber}`);
           console.log(`✅ Notified user ${request.socketId} about completion of queue #${queueNumber}`);
       } else {
