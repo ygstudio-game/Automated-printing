@@ -308,7 +308,9 @@ body {
 #merchantRequestCard h5 {
   font-family: 'Playfair Display', serif;
 }
-
+#queueNumber{
+  color: #91d22e;
+}
   </style>
 </head>
 <body>
@@ -351,7 +353,11 @@ body {
         <h2 class="section-title">Merchant Dashboard</h2>
         <div id="qrCode"  src=" " alt="Generating Code"></div> 
         <p class="text-opacity-70">Scan this QR to upload files directly</p>
-      </div>      
+      </div>    
+      <div class="input-group mb-4" style="max-width: 300px;">
+        <input type="number" class="form-control" id="searchQueue" placeholder="Enter Queue Number">
+        <button class="btn btn-primary" onclick="scrollToQueue(document.getElementById('searchQueue').value)">Go</button>
+      </div>  
         <div id="printRequests" class="mt-5"> 
      
       </div>
@@ -445,6 +451,8 @@ body {
             .then(data => {
                 document.getElementById("qrCode").innerHTML = `<img src="${data.qrCode}" alt="Scan QR Code" class="w-64 h-64 mx-auto" />`;
             });
+ 
+
             socket.on("printInitiated", async (queueNumber) => {
 try {
     const res = await fetch(`https://automated-printing.onrender.com/get-request?queueNumber=${queueNumber}`);
@@ -494,6 +502,10 @@ queue.forEach(request => {
     div.innerHTML = `
           <div id="printRequests" class="mt-5"> 
       <div class="glass-card mb-4" id="merchantRequestCard">
+          <button class="btn btn-sm btn-outline-danger position-absolute top-0 end-0 m-2"
+          title="Remove this request"
+          onclick="removeQueue(${request.queueNumber})">✖</button>
+
         <h5 class="text-lg font-medium mb-3" id="printRequestTitle">
           Print Request
            <div id="queueNumber"><b>Queue Number:</b> ${request.queueNumber}</div>
@@ -651,6 +663,21 @@ document.getElementById("uploadStatus").innerHTML = `<p class="text-success text
 `;
   
 });
+function scrollToQueue(queueNumber) {
+  const el = document.getElementById(`queue-${queueNumber}`);
+  if (el) {
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    el.classList.add("border", "border-info", "shadow");
+    setTimeout(() => el.classList.remove("border", "border-info", "shadow"), 1500);
+  } else {
+    alert(`Queue #${queueNumber} not found`);
+  }
+}
+function removeQueue(queueNumber) {
+  if (confirm(`Remove queue #${queueNumber}?`)) {
+    socket.emit("removeQueue", queueNumber);
+  }
+}
 
 
 

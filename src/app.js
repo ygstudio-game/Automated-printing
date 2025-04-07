@@ -68,6 +68,7 @@ io.on("connection", (socket) => {
     socket.on("registerMerchant", () => {
         merchantSocket = socket;
         console.log("Merchant registered:", socket.id);
+        io.emit("updateQueue", printQueue); // Update all connected clients
     });
 
     socket.on("getPrinters", () => {
@@ -194,6 +195,9 @@ app.post("/update-printer", (req, res) => {
     } else {
         res.status(400).json({ error: "Invalid printer data" });
     }
+});
+app.get("/previous-requests", (req, res) => {
+    res.json(printQueue);
 });
 
 app.get("/get-printer", async (req, res) => {
