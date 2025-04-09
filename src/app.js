@@ -140,7 +140,7 @@ app.post("/upload", upload.array("files"), async (req, res) => {
     const perPageCost = { color: 5, grayscale: 2 };
     const colorMode = req.body.colorMode;
     const copies = parseInt(req.body.copies) || 1;
-    const pagesStr = parseInt(req.body.pages) ;
+    const pagesStr = req.body.pages;
     const socketId = req.headers["x-socket-id"];
 
     let totalCost = 0;
