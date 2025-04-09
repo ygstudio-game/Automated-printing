@@ -392,8 +392,8 @@ body {
       </select>
     </div>
     <div class="mb-3">
-      <label class="form-label" for="pages">pages eg.1-3,5</label>
-      <input type="number" id="pages" class="form-control" value="1" min="1" />
+      <label class="form-label" for="pages">pages eg.1-3,5 </label>
+      <input type="text" id="pages" class="form-control" />
     </div>
     <div class="mb-3">
       <label class="form-label" for="copies">Number of Copies</label>
@@ -518,8 +518,8 @@ queue.forEach(request => {
         <h5 class="text-lg font-medium mb-3" id="printRequestTitle">
           Print Request
            <div id="queueNumber"><b>Queue Number:</b> ${request.queueNumber}</div>
-           <div id="Filename"> </div>
-        </h5>
+           <div id="Filename">${data.request.files[0].originalName}</div>
+                   </h5>
         <p><strong>Printer:</strong> <span id="merchantPrinter">${request.printerSettings.printer}</span></p>
         <p><strong>Mode:</strong> <span id="merchantMode">${request.printerSettings.colorMode}</span> | 
            <strong>Copies:</strong> <span id="merchantCopies"> ${request.printerSettings.copies}</span> <strong>Pages:</strong> <span id="merchantPages"> ${request.printerSettings.pages}</span></p>
