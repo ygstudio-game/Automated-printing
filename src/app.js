@@ -157,7 +157,6 @@ app.post("/upload", upload.array("files"), async (req, res) => {
                 if (!isNaN(Number(range))) count += 1;
             }
         }
-        console.log(count);
         
         return count;
     }
@@ -175,10 +174,8 @@ app.post("/upload", upload.array("files"), async (req, res) => {
 
                 // If user specified specific pages, count them, else use total
                 const customPageCount = countPages(pagesStr);
-                console.log(customPageCount);
                 
                 pageCount = customPageCount || totalPdfPages;
-                console.log(pageCount);
             } catch (err) {
                 console.error("Error reading PDF:", err);
             }
