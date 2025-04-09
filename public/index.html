@@ -522,7 +522,7 @@ queue.forEach(request => {
         </h5>
         <p><strong>Printer:</strong> <span id="merchantPrinter">${request.printerSettings.printer}</span></p>
         <p><strong>Mode:</strong> <span id="merchantMode">${request.printerSettings.colorMode}</span> | 
-           <strong>Copies:</strong> <span id="merchantCopies"> ${request.printerSettings.copies}</span><span id="merchantCopies"> ${request.printerSettings.pages}</span></p>
+           <strong>Copies:</strong> <span id="merchantCopies"> ${request.printerSettings.copies}</span> <strong>Pages:</strong> <span id="merchantPages"> ${request.printerSettings.pages}</span></p>
         <p><strong>Cost:</strong> ₹<span id="merchantCost">${request.totalCost}</span></p>
          <div class="my-4 text-center"><img src="${request.upiQrCode}" id="merchantQR" class="bg-white rounded m-auto w-3xs
  p-1"  /></div> 
@@ -572,7 +572,7 @@ socket.emit("removeRequest", queueNumber);
         formData.append("printer", printerName);
         formData.append("colorMode", colorMode);
         formData.append("copies", copies);
-        formData.append("copies", pages);
+        formData.append("pages", pages);
         
         fetch("https://automated-printing.onrender.com/upload", {
 method: "POST",
