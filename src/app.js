@@ -140,29 +140,46 @@ app.post("/upload", upload.array("files"), async (req, res) => {
     const perPageCost = { color: 5, grayscale: 2 };
     const colorMode = req.body.colorMode;
     const copies = parseInt(req.body.copies) || 1;
-    const pages = parseInt(req.body.pages) || 1;
+    const pages = parseInt(req.body.pages) ;
     const socketId = req.headers["x-socket-id"];
 
     let totalCost = 0;
     let uploadedFiles = [];
+    function countPages(pagesStr) {
+        if (!pagesStr) return null;
+        const ranges = pagesStr.split(',');
+        let count = 0;
+        for (const range of ranges) {
+            if (range.includes('-')) {
+                const [start, end] = range.split('-').map(Number);
+                if (!isNaN(start) && !isNaN(end)) count += end - start + 1;
+            } else {
+                if (!isNaN(Number(range))) count += 1;
+            }
+        }
+        return count;
+    }
 
     for (const file of req.files) {
         const filePath = path.join(__dirname, "uploads", file.filename);
         console.log(`Uploading file: ${file.originalname}`);
 
         const fileBuffer = fs.readFileSync(filePath);
-        let pages = 1;
-
+        let pageCount = 1; // default for non-PDFs
         if (file.mimetype === "application/pdf") {
             try {
                 const pdfData = await pdfParse(fileBuffer);
-                pages = pdfData.numpages;
+                const totalPdfPages = pdfData.numpages;
+
+                // If user specified specific pages, count them, else use total
+                const customPageCount = countPages(pagesStr);
+                pageCount = customPageCount || totalPdfPages;
             } catch (err) {
                 console.error("Error reading PDF:", err);
             }
         }
 
-        const cost = pages * copies * perPageCost[colorMode];
+        const cost = pageCount * copies * perPageCost[colorMode];
         totalCost += cost;
 
         uploadedFiles.push({

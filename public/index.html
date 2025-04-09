@@ -518,7 +518,7 @@ queue.forEach(request => {
         <h5 class="text-lg font-medium mb-3" id="printRequestTitle">
           Print Request
            <div id="queueNumber"><b>Queue Number:</b> ${request.queueNumber}</div>
-           <div id="Filename">${data.request.files[0].originalName}</div>
+           <div id="Filename">${request.files[0].originalName}</div>
                    </h5>
         <p><strong>Printer:</strong> <span id="merchantPrinter">${request.printerSettings.printer}</span></p>
         <p><strong>Mode:</strong> <span id="merchantMode">${request.printerSettings.colorMode}</span> | 
