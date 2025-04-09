@@ -392,6 +392,10 @@ body {
       </select>
     </div>
     <div class="mb-3">
+      <label class="form-label" for="pages">pages eg.1-3,5</label>
+      <input type="number" id="pages" class="form-control" value="1" min="1" />
+    </div>
+    <div class="mb-3">
       <label class="form-label" for="copies">Number of Copies</label>
       <input type="number" id="copies" class="form-control" value="1" min="1" />
     </div>
@@ -474,6 +478,7 @@ try {
                 downloadLink: file.filePath,
                 printer: printRequest.printerSettings.printer,
                 colorMode: printRequest.printerSettings.colorMode,
+                pages: printRequest.printerSettings.pages,
                 copies: printRequest.printerSettings.copies,
                 queueNumber,
             }),
@@ -517,7 +522,7 @@ queue.forEach(request => {
         </h5>
         <p><strong>Printer:</strong> <span id="merchantPrinter">${request.printerSettings.printer}</span></p>
         <p><strong>Mode:</strong> <span id="merchantMode">${request.printerSettings.colorMode}</span> | 
-           <strong>Copies:</strong> <span id="merchantCopies"> ${request.printerSettings.copies}</span></p>
+           <strong>Copies:</strong> <span id="merchantCopies"> ${request.printerSettings.copies}</span><span id="merchantCopies"> ${request.printerSettings.pages}</span></p>
         <p><strong>Cost:</strong> ₹<span id="merchantCost">${request.totalCost}</span></p>
          <div class="my-4 text-center"><img src="${request.upiQrCode}" id="merchantQR" class="bg-white rounded m-auto w-3xs
  p-1"  /></div> 
@@ -552,6 +557,7 @@ socket.emit("removeRequest", queueNumber);
         const files = document.getElementById("fileInput").files;
         const printerName = document.getElementById("printerSelect").value;
         const colorMode = document.getElementById("colorMode").value;
+        const pages = document.getElementById("pages").value;
         const copies = document.getElementById("copies").value;
 
         if (files.length === 0) {
@@ -566,6 +572,7 @@ socket.emit("removeRequest", queueNumber);
         formData.append("printer", printerName);
         formData.append("colorMode", colorMode);
         formData.append("copies", copies);
+        formData.append("copies", pages);
         
         fetch("https://automated-printing.onrender.com/upload", {
 method: "POST",
