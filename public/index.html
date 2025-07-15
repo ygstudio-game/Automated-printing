@@ -509,6 +509,7 @@ function updateFormForPrinter(printerName) {
     const colorModeSelect = document.getElementById("colorMode");
     const sideSelect = document.getElementById("side");
     const capabilities = printerCapabilities[printerName] || {};
+    console.log(capabilities);
     
     // Enable/disable color mode based on printer capability
     if (capabilities.color) {
@@ -537,7 +538,7 @@ fetch('/get-printer-capabilities')
     .then(data => {
         printerCapabilities = data;
         // Update form for initially selected printer
-        const initialPrinter = document.getElementById("printerSelect").value;
+        const initialPrinter = Object.keys(printerCapabilities)[0];;
         updateFormForPrinter(initialPrinter);
     });
     

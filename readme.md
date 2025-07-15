@@ -25,4 +25,4 @@ This is the server component for the Automated Printing Service, which handles c
 1. **Clone the repository:**
 ```bash
 git clone https://github.com/ygstudio-game/automated-printing-server.git
-cd automated-printing-server
+cd automated-printing
