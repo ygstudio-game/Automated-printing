@@ -309,7 +309,18 @@ body {
   font-family: 'Playfair Display', serif;
 }
 #queueNumber{
-  color: #91d22e;
+  color: #71a328;
+}
+.text-muted {
+  opacity: 0.6;
+}
+
+.text-muted .form-label {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+body.light-theme .text-muted .form-label {
+  color: rgba(0, 0, 0, 0.5);
 }
   </style>
 </head>
@@ -384,13 +395,54 @@ body {
       <select id="printerSelect" class="form-select">
       </select>
     </div>
-    <div class="mb-3">
+    <!-- <div class="mb-3">
       <label class="form-label" for="colorMode">Color Mode</label>
       <select id="colorMode" class="form-select">
         <option value="color">Color</option>
         <option value="grayscale">Black & White</option>
       </select>
-    </div>
+    </div> -->
+    <!-- Update these sections in the form -->
+<div class="mb-3" id="colorModeContainer">
+  <label class="form-label" for="colorMode">Color Mode</label>
+  <select id="colorMode" class="form-select">
+    <option value="color">Color</option>
+    <option value="grayscale">Black & White</option>
+  </select>
+</div>
+
+<div class="mb-3" id="sideContainer">
+  <label class="form-label" for="side">Print Side</label>
+  <select id="side" class="form-select">
+    <option value="simplex">Single Side</option>
+    <option value="duplex">Double Side (Duplex)</option>
+  </select>
+</div>
+<div class="mb-3">
+  <label class="form-label" for="orientation">Orientation</label>
+  <select id="orientation" class="form-select">
+    <option value="portrait">Portrait</option>
+    <option value="landscape">Landscape</option>
+  </select>
+</div>
+<div class="mb-3">
+  <label class="form-label" for="scale">Scale</label>
+  <select id="scale" class="form-select">
+    <option value="noscale">No Scale</option>
+    <option value="shrink">Shrink</option>
+    <option value="fit">Fit</option>
+  </select>
+</div>
+<div class="mb-3">
+  <label class="form-label" for="paperSize">Paper Size</label>
+  <select id="paperSize" class="form-select">
+    <option value="A4">A4</option>
+    <option value="letter">Letter</option>
+    <option value="legal">Legal</option>
+    <option value="A5">A5</option>
+    <option value="A3">A3</option>
+  </select>
+</div>
     <div class="mb-3">
       <label class="form-label" for="pages">pages eg.1-3,5 </label>
       <input type="text" id="pages" class="form-control" />
@@ -422,9 +474,13 @@ body {
   
   <script>
     let a;
-    const socket = io("https://automated-printing.onrender.com");
+    const socket = io("https://automated-printing.onrender.com/");
     const urlParams = new URLSearchParams(window.location.search);
     const isClient = urlParams.get("mode") === "client";
+    let printerCapabilities = {};
+    let currentPrintQueue = [];
+    let editingQueueNumber = null;
+    let availablePrinters = [];
 
     // Client-side page initialization
     if (isClient) {
@@ -445,8 +501,58 @@ body {
 })
 .catch(error => console.error('Error fetching printers:', error));
 
+
+//printer capabilities
+// Add this to the client script
+ 
+function updateFormForPrinter(printerName) {
+    const colorModeSelect = document.getElementById("colorMode");
+    const sideSelect = document.getElementById("side");
+    const capabilities = printerCapabilities[printerName] || {};
+    
+    // Enable/disable color mode based on printer capability
+    if (capabilities.color) {
+        colorModeSelect.disabled = false;
+        colorModeSelect.parentElement.classList.remove("text-muted");
+    } else {
+        colorModeSelect.disabled = true;
+        colorModeSelect.value = "grayscale";
+        colorModeSelect.parentElement.classList.add("text-muted");
+    }
+    
+    // Enable/disable duplex options based on printer capability
+    if (capabilities.duplex) {
+        sideSelect.disabled = false;
+        sideSelect.parentElement.classList.remove("text-muted");
+    } else {
+        sideSelect.disabled = true;
+        sideSelect.value = "simplex";
+        sideSelect.parentElement.classList.add("text-muted");
+    }
+}
+
+// Add printer capabilities to the printer list
+fetch('/get-printer-capabilities')
+    .then(res => res.json())
+    .then(data => {
+        printerCapabilities = data;
+        // Update form for initially selected printer
+        const initialPrinter = document.getElementById("printerSelect").value;
+        updateFormForPrinter(initialPrinter);
+    });
+    
+// Update form when printer selection changes
+document.getElementById("printerSelect").addEventListener("change", function() {
+    updateFormForPrinter(this.value);
+});
     } 
     else {
+              fetch('/get-printer')
+            .then(response => response.json())
+            .then(data => {
+                availablePrinters = data.printers;
+            })
+            .catch(error => console.error('Error fetching printers:', error));
         // Merchant page initialization
         document.getElementById("merchantPage").classList.remove("d-none");
         socket.emit("registerMerchant");
@@ -501,48 +607,231 @@ try {
     console.error("❌ Error during printing:", err.message);
 }
 });
- 
-            socket.on("updateQueue", (queue) => {
-const queueDiv = document.getElementById("printRequests");
-queueDiv.innerHTML = ""; // Clear previous content
-
-queue.forEach(request => {
-    const div = document.createElement("div");
-    console.log(request);
-    
-    div.classList.add("p-4",  "rounded-lg", "mb-4", "glass-card", "mb-4"  ,"shadow-md");
-    div.innerHTML = `
-          <div id="printRequests" class="mt-5"> 
-      <div class="glass-card mb-4 merchantRequestCard" id="merchantRequestCard-${request.queueNumber}">
-          <button class="btn btn-sm btn-outline-danger position-absolute top-0 end-0 m-2"
-          title="Remove this request"
-          onclick="removeQueue(${request.queueNumber})">✖</button>
-
-        <h5 class="text-lg font-medium mb-3" id="printRequestTitle">
-          Print Request
-           <div id="queueNumber"><b>Queue Number:</b> ${request.queueNumber}</div>
-           <div id="Filename">${request.files[0].originalName}</div>
-                   </h5>
-        <p><strong>Printer:</strong> <span id="merchantPrinter">${request.printerSettings.printer}</span></p>
-        <p><strong>Mode:</strong> <span id="merchantMode">${request.printerSettings.colorMode}</span> | 
-           <strong>Copies:</strong> <span id="merchantCopies"> ${request.printerSettings.copies}</span> <strong>Pages:</strong> <span id="merchantPages"> ${request.printerSettings.pages}</span></p>
-        <p><strong>Cost:</strong> ₹<span id="merchantCost">${request.totalCost}</span></p>
-         <div class="my-4 text-center"><img src="${request.upiQrCode}" id="merchantQR" class="bg-white rounded m-auto w-3xs
- p-1"  /></div> 
-        <div class="d-flex gap-3 mt-4">
-          <button class="btn btn-outline-light w-50" id="confirmButton" onclick="confirmPayment(${request.queueNumber})">Confirm</button>
-          <button id="printButton-${request.queueNumber}" class="glow-button w-50 ${request.paymentConfirmed ? 'cursor-pointer' : 'cursor-not-allowed'} text-white p-2 rounded ml-2"  onclick="printFiles(${request.queueNumber})" ${request.paymentConfirmed ? '' : 'disabled'}>Print</button>
-        </div>
-      </div>
-      </div>
-         <hr class="my-4">
-    `;
-
-    queueDiv.appendChild(div);
+  
+            socket.on("comfirm_and_print", (queuenumber) => {
+              printFiles(queuenumber)
 });
+ 
+    // Update the socket.on("updateQueue") handler
+    socket.on("updateQueue", (queue) => {
+        currentPrintQueue = queue;
+        const queueDiv = document.getElementById("printRequests");
+        queueDiv.innerHTML = ""; // Clear previous content
+        console.log(2);
+        
+        queue.forEach(request => {
+            const div = document.createElement("div");
+            div.classList.add("p-4", "rounded-lg", "mb-4", "glass-card", "mb-4", "shadow-md");
+            
+            if (request.queueNumber === editingQueueNumber) {
+                // Render edit form
+                console.log(466);
+                
+                div.innerHTML = renderEditForm(request);
+            } else {
+                // Render normal card
+                console.log(1466);
 
-}); 
+                div.innerHTML = renderRequestCard(request);
+            }
+            
+            queueDiv.appendChild(div);
+        });
+    });
 
+}
+        // Render functions
+    function renderRequestCard(request) {
+        return `
+            <div class="glass-card mb-4 merchantRequestCard" id="merchantRequestCard-${request.queueNumber}">
+                <button class="btn btn-sm btn-outline-danger position-absolute top-0 end-0 m-2"
+                    title="Remove this request"
+                    onclick="removeQueue(${request.queueNumber})">✖</button>
+
+                <h5 class="text-lg font-medium mb-3" id="printRequestTitle">
+                    Print Request
+                    <div id="queueNumber"><b>Queue Number:</b> ${request.queueNumber}</div>
+                    <div id="Filename">${request.files[0].originalName}</div>
+                </h5>
+                
+                <p><strong>Printer:</strong> <span id="merchantPrinter">${request.printerSettings.printer}</span></p>
+                <p><strong>Mode:</strong> <span id="merchantMode">${request.printerSettings.colorMode}</span> | 
+                <strong>Copies:</strong> <span id="merchantCopies">${request.printerSettings.copies}</span> 
+                <strong>Pages:</strong> <span id="merchantPages">${request.printerSettings.pages}</span></p>
+                <p><strong>Orientation:</strong> ${request.printerSettings.orientation}</p>
+                <p><strong>Scale:</strong> ${request.printerSettings.scale}</p>
+                <p><strong>Side:</strong> ${request.printerSettings.side}</p>
+                <p><strong>Paper Size:</strong> ${request.printerSettings.paperSize}</p>
+                <p><strong>Cost:</strong> ₹<span id="merchantCost">${request.totalCost}</span></p>
+                
+                <div class="my-4 text-center">
+                    <img src="${request.upiQrCode}" id="merchantQR" class="bg-white rounded m-auto w-3xs p-1" />
+                </div> 
+                
+                <div class="d-flex gap-2 mt-4 flex-wrap">
+                    <button class="btn btn-outline-light flex-grow-1" 
+                        onclick="confirmPayment(${request.queueNumber})" 
+                        ${request.paymentConfirmed ? 'disabled' : ''}>
+                        ${request.paymentConfirmed ? '✅ Confirmed' : 'Confirm'}
+                    </button>
+                    
+                    <button id="printButton-${request.queueNumber}" 
+                        class="glow-button flex-grow-1 text-white p-2 rounded d-none"  
+                        onclick="printFiles(${request.queueNumber})" 
+                        ${request.paymentConfirmed ? '' : 'disabled'}>
+                        Print
+                    </button>
+                    
+                    <button class="btn btn-outline-info flex-grow-1 d-none" 
+                        onclick="editRequest(${request.queueNumber})">
+                        Edit
+                    </button>
+                </div>
+            </div>
+            <hr class="my-4">
+        `;
+    }
+
+    function renderEditForm(request) {
+        const settings = request.printerSettings;
+        return `
+            <div class="glass-card mb-4 merchantRequestCard" id="merchantEditCard-${request.queueNumber}">
+                <button class="btn btn-sm btn-outline-danger position-absolute top-0 end-0 m-2"
+                    title="Cancel editing"
+                    onclick="cancelEdit(${request.queueNumber})">✖</button>
+
+                <h5 class="text-lg font-medium mb-3">Edit Print Settings</h5>
+                <p>File: ${request.files[0].originalName}</p>
+                <p>Queue: #${request.queueNumber}</p>
+                
+                <div class="mb-3">
+                    <label class="form-label">Printer</label>
+                    <select class="form-select" id="edit-printer-${request.queueNumber}">
+                        ${availablePrinters.map(p => 
+                            `<option value="${p}" ${p === settings.printer ? 'selected' : ''}>${p}</option>`
+                        ).join('')}
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Color Mode</label>
+                    <select class="form-select" id="edit-colorMode-${request.queueNumber}">
+                        <option value="color" ${settings.colorMode === 'color' ? 'selected' : ''}>Color</option>
+                        <option value="grayscale" ${settings.colorMode === 'grayscale' ? 'selected' : ''}>Black & White</option>
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Print Side</label>
+                    <select class="form-select" id="edit-side-${request.queueNumber}">
+                        <option value="simplex" ${settings.side === 'simplex' ? 'selected' : ''}>Single Side</option>
+                        <option value="duplex" ${settings.side === 'duplex' ? 'selected' : ''}>Double Side (Duplex)</option>
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Orientation</label>
+                    <select class="form-select" id="edit-orientation-${request.queueNumber}">
+                        <option value="portrait" ${settings.orientation === 'portrait' ? 'selected' : ''}>Portrait</option>
+                        <option value="landscape" ${settings.orientation === 'landscape' ? 'selected' : ''}>Landscape</option>
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Scale</label>
+                    <select class="form-select" id="edit-scale-${request.queueNumber}">
+                        <option value="noscale" ${settings.scale === 'noscale' ? 'selected' : ''}>No Scale</option>
+                        <option value="shrink" ${settings.scale === 'shrink' ? 'selected' : ''}>Shrink</option>
+                        <option value="fit" ${settings.scale === 'fit' ? 'selected' : ''}>Fit</option>
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Paper Size</label>
+                    <select class="form-select" id="edit-paperSize-${request.queueNumber}">
+                        <option value="A4" ${settings.paperSize === 'A4' ? 'selected' : ''}>A4</option>
+                        <option value="letter" ${settings.paperSize === 'letter' ? 'selected' : ''}>Letter</option>
+                        <option value="legal" ${settings.paperSize === 'legal' ? 'selected' : ''}>Legal</option>
+                        <option value="A5" ${settings.paperSize === 'A5' ? 'selected' : ''}>A5</option>
+                        <option value="A3" ${settings.paperSize === 'A3' ? 'selected' : ''}>A3</option>
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Pages (e.g., 1-3,5)</label>
+                    <input type="text" class="form-control" id="edit-pages-${request.queueNumber}" 
+                        value="${settings.pages || ''}">
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Copies</label>
+                    <input type="number" class="form-control" id="edit-copies-${request.queueNumber}" 
+                        value="${settings.copies || 1}" min="1">
+                </div>
+                
+                <div class="d-flex gap-3 mt-4">
+                    <button class="btn btn-outline-light w-50" 
+                        onclick="cancelEdit(${request.queueNumber})">
+                        Cancel
+                    </button>
+                    <button class="glow-button w-50" 
+                        onclick="saveEditedRequest(${request.queueNumber})">
+                        Save Changes
+                    </button>
+                </div>
+            </div>
+            <hr class="my-4">
+        `;
+    }
+
+    // Edit functions
+    function editRequest(queueNumber) {
+      console.log(3);
+      
+        editingQueueNumber = queueNumber;
+        console.log(currentPrintQueue);
+        socket.emit("updateQueue", currentPrintQueue);
+    }
+
+    function cancelEdit(queueNumber) {
+        editingQueueNumber = null;
+        socket.emit("updateQueue", currentPrintQueue);
+    }
+
+    function saveEditedRequest(queueNumber) {
+        // Get updated values
+        const printer = document.getElementById(`edit-printer-${queueNumber}`).value;
+        const colorMode = document.getElementById(`edit-colorMode-${queueNumber}`).value;
+        const side = document.getElementById(`edit-side-${queueNumber}`).value;
+        const orientation = document.getElementById(`edit-orientation-${queueNumber}`).value;
+        const scale = document.getElementById(`edit-scale-${queueNumber}`).value;
+        const paperSize = document.getElementById(`edit-paperSize-${queueNumber}`).value;
+        const pages = document.getElementById(`edit-pages-${queueNumber}`).value;
+        const copies = document.getElementById(`edit-copies-${queueNumber}`).value;
+
+        // Find request and update settings
+        const request = currentPrintQueue.find(req => req.queueNumber === queueNumber);
+        if (request) {
+            request.printerSettings = {
+                printer,
+                colorMode,
+                copies,
+                pages,
+                orientation,
+                scale,
+                side,
+                paperSize
+            };
+            
+            // Emit update to server
+            socket.emit("updatePrintRequest", {
+                queueNumber: queueNumber,
+                printerSettings: request.printerSettings
+            });
+        }
+        
+        editingQueueNumber = null;
+        socket.emit("updateQueue", currentPrintQueue);
     }
     function removeRequest(queueNumber) {
 socket.emit("removeRequest", queueNumber);
@@ -562,7 +851,10 @@ socket.emit("removeRequest", queueNumber);
         const colorMode = document.getElementById("colorMode").value;
         const pages = document.getElementById("pages").value;
         const copies = document.getElementById("copies").value;
-
+        const orientation = document.getElementById("orientation").value;
+        const scale = document.getElementById("scale").value;
+        const side = document.getElementById("side").value;
+        const paperSize = document.getElementById("paperSize").value;
         if (files.length === 0) {
             alert("Please select files.");
             return;
@@ -576,7 +868,10 @@ socket.emit("removeRequest", queueNumber);
         formData.append("colorMode", colorMode);
         formData.append("copies", copies);
         formData.append("pages", pages);
-        
+        formData.append("orientation", orientation);
+        formData.append("scale", scale);
+        formData.append("side", side);
+        formData.append("paperSize", paperSize);
         fetch("https://automated-printing.onrender.com/upload", {
 method: "POST",
 body: formData,
@@ -649,7 +944,6 @@ fetch("https://automated-printing.onrender.com/saveMerchant", {
 
     // Print files handler
     function printFiles(queueNumber) {
-        console.log(4);
         
 fetch("https://automated-printing.onrender.com/print", {
     method: "POST",
