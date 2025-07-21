@@ -612,6 +612,13 @@ try {
             socket.on("comfirm_and_print", (queuenumber) => {
               printFiles(queuenumber)
 });
+            socket.on("get-queueNumber", async () => {
+             const localQueueNumber = await getQueueNumber();
+
+    socket.emit("save-queueNumber", localQueueNumber);
+
+           
+});
  
     // Update the socket.on("updateQueue") handler
     socket.on("updateQueue", (queue) => {
@@ -916,7 +923,24 @@ status.innerHTML = ``;
 socket.emit("confirmPayment", queueNumber);
 alert("Payment confirmed!");
 }
-
+ async function getQueueNumber() {
+    try {
+      const response = await fetch('http://localhost:3001/next-queue', {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!response.ok) throw new Error('Failed to get queue number');
+      return await response.json();
+    } catch (error) {
+      console.error('Error getting queue number:', error);
+      // Fallback: generate timestamp-based number
+      return Math.floor(Date.now() / 1000);
+    }
+  }
 function saveMerchantDetails() {
 const shopName = document.getElementById("merchant-name").value;
 const upiId = document.getElementById("merchant-upi").value;

@@ -73,7 +73,6 @@ app.post("/print-status", (req, res) => {
 io.on("connection", (socket) => {
     console.log("Client connected:", socket.id);
     socket.on("printCompleted", (queueNumber,socketId) => {
-        console.log(socketId)
         printQueue = printQueue.filter(req => req.queueNumber !== queueNumber);
         io.emit("updateQueue", printQueue); // Update all connected clients
     io.emit("printingStarted", queueNumber,socketId);
@@ -119,6 +118,9 @@ io.on("connection", (socket) => {
 socket.on("confirmPayment", (queueNumber) => {
     // comfirm and print
         io.emit("comfirm_and_print", queueNumber);
+});
+socket.on("save-queueNumber", (QueueNumber) => {
+     queueNumber = QueueNumber
 });
 // Remove request after printing
 socket.on("removeRequest", (queueNumber) => {
@@ -421,14 +423,17 @@ server.listen(port, () => {
 //     queueNumber +=1
 // }
 async function getNextQueueNumber() {
-  try {
-    const response = await axios.get('http://localhost:3001/next-queue');
-    return response.data;
-  } catch (err) {
-    console.error('Error getting queue number from app:', err);
-    fallbackQueueCounter++;
-    return fallbackQueueCounter;
-  }
+//   try {
+//     const response = await axios.get('http://localhost:3001/next-queue');
+//     return response.data;
+//   } catch (err) {
+//     console.error('Error getting queue number from app:', err);
+//     fallbackQueueCounter++;
+//     return fallbackQueueCounter;
+//   }
+    io.emit("get-queueNumber");
+
+
 }
 function deleteRequestFiles(request) {
     request.files.forEach(file => {
