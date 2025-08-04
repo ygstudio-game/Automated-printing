@@ -120,7 +120,15 @@ socket.on("confirmPayment", (queueNumber) => {
         io.emit("comfirm_and_print", queueNumber);
 });
 socket.on("save-queueNumber", (QueueNumber) => {
+
+    console.log(queueNumber);
      queueNumber = QueueNumber
+     console.log(QueueNumber);
+     console.log(queueNumber);
+     if (QueueNumber == 1) {
+        // printQueue = [];
+     }
+     
 });
 // Remove request after printing
 socket.on("removeRequest", (queueNumber) => {
@@ -165,7 +173,8 @@ app.post("/upload", upload.array("files"), async (req, res) => {
     if (!req.files || req.files.length === 0) return res.status(400).send("No files uploaded.");
     if (!merchantDetails.upiId) return res.status(400).send("Merchant UPI ID not set.");
 
-    queueNumber = await getNextQueueNumber();
+    // queueNumber = await getNextQueueNumber();
+    
     const perPageCost = { color: printingprices._colorPrice, grayscale: printingprices._blackPrice };
     const colorMode = req.body.colorMode;
     const copies = parseInt(req.body.copies) || 1;
@@ -316,6 +325,8 @@ app.post("/upload", upload.array("files"), async (req, res) => {
         requestTimeouts.set(newRequest.queueNumber, timeoutId);
 
     res.json({ success: true, request: newRequest });
+        //increamenting queunumber 
+        queueNumberincrese();
         } catch (error) {
         console.error("Upload error:", error);
         // Cleanup any uploaded files on error
@@ -344,6 +355,7 @@ app.post("/update-printer", (req, res) => {
             duplex: config.duplex
         };
     });
+    resetPrintMemo();
     res.json({ success: true });
 
     // if (Array.isArray(printers)) {
@@ -389,8 +401,8 @@ app.post("/print", (req, res) => {
 
   
 app.get("/get-request", (req, res) => {
-    const queueNumber = req.query.queueNumber;
-    const request = printQueue.find(req => req.queueNumber == queueNumber); // use == for string/number match
+    const queryQueueNumber = req.query.queueNumber;
+    const request = printQueue.find(req => req.queueNumber == queryQueueNumber); // use == for string/number match
 
     if (!request) {
         return res.status(404).json({ error: "Request not found" });
@@ -419,9 +431,9 @@ app.get("/get-file", (req, res) => {
 server.listen(port, () => {
     console.log(`✅ Server running at http://localhost:${port}/`);
 });
-// function queueNumberincrese( ) {
-//     queueNumber +=1
-// }
+function queueNumberincrese( ) {
+    queueNumber +=1
+}
 async function getNextQueueNumber() {
 //   try {
 //     const response = await axios.get('http://localhost:3001/next-queue');
@@ -432,8 +444,6 @@ async function getNextQueueNumber() {
 //     return fallbackQueueCounter;
 //   }
     io.emit("get-queueNumber");
-
-
 }
 function deleteRequestFiles(request) {
     request.files.forEach(file => {
@@ -479,13 +489,16 @@ function cleanUploadsDirectory() {
             const filePath = path.join(uploadDir, file);
             const stat = fs.statSync(filePath);
             
-            // Delete files older than 8 minutes
-            if (Date.now() - stat.mtimeMs > 8 * 60 * 1000) {
                 fs.unlink(filePath, err => {
                     if (err) console.error(`Error cleaning ${file}:`, err);
                     else console.log(`♻️ Cleaned old file: ${file}`);
                 });
-            }
         });
     });
+}
+function resetPrintMemo() {
+    queueNumber =1;
+    printQueue = []
+        io.emit("updateQueue", printQueue); // Update all connected clients
+
 }

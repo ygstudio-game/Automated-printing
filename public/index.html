@@ -933,7 +933,9 @@ alert("Payment confirmed!");
         }
       });
       
+      
       if (!response.ok) throw new Error('Failed to get queue number');
+      console.log(response);
       return await response.json();
     } catch (error) {
       console.error('Error getting queue number:', error);
