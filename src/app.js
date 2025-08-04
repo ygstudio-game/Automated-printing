@@ -284,7 +284,7 @@ app.post("/upload", upload.array("files"), async (req, res) => {
     totalCost += cost;
 
     uploadedFiles.push({
-      filePath: `https://automated-printing.onrender.com/uploads/${file.filename}`,
+      filePath: `https://automated-printing.onrender.com/download?filename=${file.filename}`,
       originalName: file.originalname,
     });
   }    
@@ -426,6 +426,28 @@ app.get("/get-file", (req, res) => {
     } else {
         return res.status(404).json({ exists: false, message: "File not found" });
     }
+});
+app.get("/download", (req, res) => {
+    const { filename } = req.query;
+
+    if (!filename) {
+        return res.status(400).json({ error: "Filename is required" });
+    }
+
+    const filePath = path.join(__dirname, "uploads", filename);
+
+    if (!fs.existsSync(filePath)) {
+        return res.status(404).json({ error: "File not found" });
+    }
+
+    res.download(filePath, filename, (err) => {
+        if (err) {
+            console.error("❌ Error downloading file:", err);
+            res.status(500).send("Error downloading file");
+        } else {
+            console.log(`⬇️ File downloaded: ${filename}`);
+        }
+    });
 });
 
 server.listen(port, () => {
