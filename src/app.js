@@ -102,7 +102,7 @@ io.on("connection", (socket) => {
                 socket.emit("printerInfo", printers);
             })
             .catch(err => {
-                console.error("Error fetching printers:", err);
+                console.error("Error fetching printers: ", err);
                 socket.emit("printerInfo", []);
             });
     });
