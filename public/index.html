@@ -475,7 +475,7 @@ body.light-theme .text-muted .form-label {
   
   <script>
     let a;
-    const socket = io("http://localhost:6822/");
+    const socket = io("https://automated-printing.onrender.com/");
     const urlParams = new URLSearchParams(window.location.search);
     const isClient = urlParams.get("mode") === "client";
     let printerCapabilities = {};
