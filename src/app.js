@@ -452,6 +452,9 @@ app.get("/download", (req, res) => {
 
 server.listen(port, () => {
     console.log(`✅ Server running at http://localhost:${port}/`);
+      console.log(`Server running on port ${port}`);
+  pingWebsite(); // initial ping
+  setInterval(pingWebsite, 10 * 60 * 1000); // repeat every 10 minutes
 });
 function queueNumberincrese( ) {
     queueNumber +=1
@@ -535,8 +538,4 @@ const pingWebsite = async () => {
     console.error(`Ping error: ${err}`);
   }
 };
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-  pingWebsite(); // initial ping
-  setInterval(pingWebsite, 12 * 60 * 1000); // repeat every 12 minutes
-});
+ 
