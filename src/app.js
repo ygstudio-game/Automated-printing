@@ -524,3 +524,19 @@ function resetPrintMemo() {
         io.emit("updateQueue", printQueue); // Update all connected clients
 
 }
+app.get("/getpinged", (req, res) => {
+  res.send("Server is alive!");
+});
+const pingWebsite = async () => {
+  try {
+    const res = await fetch("https://automated-printing.onrender.com/getpinged");
+    console.log(`Pinged ${WEBSITE_URL} - Status: ${res.status} - ${new Date()}`);
+  } catch (err) {
+    console.error(`Ping error: ${err}`);
+  }
+};
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+  pingWebsite(); // initial ping
+  setInterval(pingWebsite, 12 * 60 * 1000); // repeat every 12 minutes
+});

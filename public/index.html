@@ -330,7 +330,7 @@ body.light-theme .text-muted .form-label {
   <nav class="navbar navbar-dark offcanvas-start  bg-dark px-4 d-flex justify-content-between">
     <div class="d-flex align-items-center gap-3">
       <button class="btn btn-outline-light" id="siderbarTogglebtn" data-bs-toggle="offcanvas" data-bs-target="#sidebar">☰</button>
-      <h1 class="text-white m-0 fs-5 fs-sm-4 fs-md-3 fs-lg-2">Automated-Printing</h1>
+      <h1 class="text-white m-0 fs-5 fs-sm-4 fs-md-3 fs-lg-2 ">Automated-Printing</h1>
     </div>
     <div class="theme-toggle" onclick="toggleTheme()">
       <span id="themeIcon">🌙</span>
@@ -469,12 +469,13 @@ body.light-theme .text-muted .form-label {
       document.body.classList.toggle("light-theme");
       const icon = document.getElementById("themeIcon");
       icon.textContent = document.body.classList.contains("light-theme") ? "☀️" : "🌙";
-    }
+    } 
+
   </script>
   
   <script>
     let a;
-    const socket = io("https://automated-printing.onrender.com/");
+    const socket = io("http://localhost:6822/");
     const urlParams = new URLSearchParams(window.location.search);
     const isClient = urlParams.get("mode") === "client";
     let printerCapabilities = {};
@@ -558,7 +559,7 @@ document.getElementById("printerSelect").addEventListener("change", function() {
         document.getElementById("merchantPage").classList.remove("d-none");
         socket.emit("registerMerchant");
         a ;
-        fetch("https://automated-printing.onrender.com/generateQR")
+        fetch("/generateQR")
             .then(res => res.json())
             .then(data => {
                 document.getElementById("qrCode").innerHTML = `<img src="${data.qrCode}" alt="Scan QR Code" class="w-64 h-64 mx-auto" />`;
@@ -567,7 +568,7 @@ document.getElementById("printerSelect").addEventListener("change", function() {
 
             socket.on("printInitiated", async (queueNumber) => {
 try {
-    const res = await fetch(`https://automated-printing.onrender.com/get-request?queueNumber=${queueNumber}`);
+    const res = await fetch(`/get-request?queueNumber=${queueNumber}`);
     if (!res.ok) throw new Error("Request not found");
 
     const printRequest = await res.json();
@@ -880,7 +881,7 @@ socket.emit("removeRequest", queueNumber);
         formData.append("scale", scale);
         formData.append("side", side);
         formData.append("paperSize", paperSize);
-        fetch("https://automated-printing.onrender.com/upload", {
+        fetch("/upload", {
 method: "POST",
 body: formData,
 headers: {
@@ -933,9 +934,7 @@ alert("Payment confirmed!");
         }
       });
       
-      
       if (!response.ok) throw new Error('Failed to get queue number');
-      console.log(response);
       return await response.json();
     } catch (error) {
       console.error('Error getting queue number:', error);
@@ -953,7 +952,7 @@ if (!shopName || !upiId) {
 }
 
 // Save merchant details to the backend
-fetch("https://automated-printing.onrender.com/saveMerchant", {
+fetch("/saveMerchant", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ shopName, upiId })
@@ -972,7 +971,7 @@ fetch("https://automated-printing.onrender.com/saveMerchant", {
     // Print files handler
     function printFiles(queueNumber) {
         
-fetch("https://automated-printing.onrender.com/print", {
+fetch("/print", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
