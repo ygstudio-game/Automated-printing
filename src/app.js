@@ -533,7 +533,7 @@ app.get("/getpinged", (req, res) => {
 const pingWebsite = async () => {
   try {
     const res = await fetch("https://automated-printing.onrender.com/getpinged");
-    console.log(`Pinged ${WEBSITE_URL} - Status: ${res.status} - ${new Date()}`);
+    console.log(`Pinged  Status: ${res.status} - ${new Date()}`);
   } catch (err) {
     console.error(`Ping error: ${err}`);
   }
