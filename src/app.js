@@ -454,7 +454,7 @@ server.listen(port, () => {
     console.log(`✅ Server running at http://localhost:${port}/`);
       console.log(`Server running on port ${port}`);
   pingWebsite(); // initial ping
-  setInterval(pingWebsite, 10 * 60 * 1000); // repeat every 10 minutes
+  //setInterval(pingWebsite, 10 * 60 * 1000); // repeat every 10 minutes
 });
 function queueNumberincrese( ) {
     queueNumber +=1
